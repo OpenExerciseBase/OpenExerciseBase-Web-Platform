@@ -103,7 +103,7 @@ export default function AddExercisePage() {
             process.
           </p>
           <Link
-            href="/contribute"
+            href="/contribution-guidelines"
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors"
           >
             Read contribution guidelines
