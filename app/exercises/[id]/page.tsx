@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import JSZip from "jszip";
 import { useParams, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -217,7 +218,7 @@ export default function ExerciseDetailPage() {
 
         {/* Download */}
         <div className="mt-10">
-          <DownloadSection exerciseId={data.id} branch={data.branch} />
+          <DownloadSection exerciseId={data.id} branch={data.branch} imageFileNames={data.mediaContent?.imageURLs ?? []} />
         </div>
 
         {/* Footer actions */}
@@ -277,65 +278,134 @@ function SummaryItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DownloadSection({ exerciseId, branch }: { exerciseId: string; branch: string }) {
-  const [downloading, setDownloading] = useState(false);
-  const [error, setError] = useState(false);
+function DownloadSection({
+  exerciseId,
+  branch,
+  imageFileNames,
+}: {
+  exerciseId: string;
+  branch: string;
+  imageFileNames: string[];
+}) {
+  const [jsonBusy, setJsonBusy] = useState(false);
+  const [jsonError, setJsonError] = useState(false);
+  const [imgBusy, setImgBusy] = useState(false);
+  const [imgError, setImgError] = useState(false);
+  const [imgProgress, setImgProgress] = useState("");
 
-  const handleDownload = async () => {
-    setDownloading(true);
-    setError(false);
+  const RAW = "https://raw.githubusercontent.com/rania-is/samplejson";
+  const hasImages = imageFileNames.length > 0;
+
+  const handleJsonDownload = useCallback(async () => {
+    setJsonBusy(true);
+    setJsonError(false);
     try {
-      const url = `https://raw.githubusercontent.com/rania-is/samplejson/${branch}/exercises/${exerciseId}.json`;
-      const res = await fetch(url);
+      const res = await fetch(`${RAW}/${branch}/exercises/${exerciseId}.json`);
       if (!res.ok) throw new Error("Failed to fetch");
       const blob = await res.blob();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${exerciseId}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(a.href);
+      triggerDownload(blob, `${exerciseId}.json`);
     } catch {
-      setError(true);
+      setJsonError(true);
     } finally {
-      setDownloading(false);
+      setJsonBusy(false);
     }
-  };
+  }, [exerciseId, branch, RAW]);
+
+  const handleImgDownload = useCallback(async () => {
+    setImgBusy(true);
+    setImgError(false);
+    setImgProgress("");
+    try {
+      const zip = new JSZip();
+      const total = imageFileNames.length;
+
+      for (let i = 0; i < total; i++) {
+        const fileName = imageFileNames[i];
+        setImgProgress(`Downloading ${i + 1} of ${total}`);
+        const url = `${RAW}/${branch}/images/${exerciseId}/${fileName}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Failed to fetch ${fileName}`);
+        const buf = await res.arrayBuffer();
+        zip.file(fileName, buf);
+      }
+
+      setImgProgress("Zipping files");
+      const content = await zip.generateAsync({ type: "blob" });
+      triggerDownload(content, `${exerciseId}_images.zip`);
+      setImgProgress("");
+    } catch {
+      setImgError(true);
+      setImgProgress("");
+    } finally {
+      setImgBusy(false);
+    }
+  }, [exerciseId, branch, imageFileNames, RAW]);
 
   return (
     <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
       <h2 className="text-lg font-bold text-gray-900">Download Exercise</h2>
       <p className="mt-1.5 text-sm text-gray-500">
-        Download the full structured JSON representation of this exercise.
+        Download the structured JSON file or the instructional images for this exercise.
       </p>
-      <button
-        onClick={handleDownload}
-        disabled={downloading}
-        className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
+
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        {/* JSON button */}
+        <button
+          onClick={handleJsonDownload}
+          disabled={jsonBusy}
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
-          />
-        </svg>
-        {downloading ? "Downloading..." : "Download JSON"}
-      </button>
-      {error && (
+          <DownloadIcon />
+          {jsonBusy ? "Downloading..." : "Download JSON"}
+        </button>
+
+        {/* Images button */}
+        <button
+          onClick={handleImgDownload}
+          disabled={imgBusy || !hasImages}
+          aria-label="Download exercise images as a zip file"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <DownloadIcon />
+          {imgBusy ? (imgProgress || "Preparing...") : "Download Images"}
+        </button>
+      </div>
+
+      {!hasImages && (
+        <p className="mt-3 text-sm text-gray-400">
+          No images available for this exercise.
+        </p>
+      )}
+      {jsonError && (
         <p className="mt-3 text-sm text-red-600">
           Unable to download this exercise at the moment.
         </p>
       )}
+      {imgError && (
+        <p className="mt-3 text-sm text-red-600">
+          Unable to download images at the moment.
+        </p>
+      )}
     </section>
   );
+}
+
+function DownloadIcon() {
+  return (
+    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    </svg>
+  );
+}
+
+function triggerDownload(blob: Blob, filename: string) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
 }
 
 function formatSnakeCase(str: string): string {
