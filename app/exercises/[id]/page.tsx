@@ -218,7 +218,7 @@ export default function ExerciseDetailPage() {
 
         {/* Download */}
         <div className="mt-10">
-          <DownloadSection exerciseId={data.id} branch={data.branch} imageFileNames={data.mediaContent?.imageURLs ?? []} />
+          <DownloadSection exerciseId={data.id} branch={data.branch} resolvedImageUrls={data.resolvedImageUrls ?? []} />
         </div>
 
         {/* Footer actions */}
@@ -281,11 +281,11 @@ function SummaryItem({ label, value }: { label: string; value: string }) {
 function DownloadSection({
   exerciseId,
   branch,
-  imageFileNames,
+  resolvedImageUrls,
 }: {
   exerciseId: string;
   branch: string;
-  imageFileNames: string[];
+  resolvedImageUrls: string[];
 }) {
   const [jsonBusy, setJsonBusy] = useState(false);
   const [jsonError, setJsonError] = useState(false);
@@ -294,7 +294,7 @@ function DownloadSection({
   const [imgProgress, setImgProgress] = useState("");
 
   const RAW = "https://raw.githubusercontent.com/rania-is/samplejson";
-  const hasImages = imageFileNames.length > 0;
+  const hasImages = resolvedImageUrls.length > 0;
 
   const handleJsonDownload = useCallback(async () => {
     setJsonBusy(true);
@@ -317,13 +317,13 @@ function DownloadSection({
     setImgProgress("");
     try {
       const zip = new JSZip();
-      const total = imageFileNames.length;
+      const total = resolvedImageUrls.length;
 
       for (let i = 0; i < total; i++) {
-        const fileName = imageFileNames[i];
+        const imgUrl = resolvedImageUrls[i];
+        const fileName = imgUrl.split("/").pop() || `image_${i}`;
         setImgProgress(`Downloading ${i + 1} of ${total}`);
-        const url = `${RAW}/${branch}/images/${exerciseId}/${fileName}`;
-        const res = await fetch(url);
+        const res = await fetch(imgUrl);
         if (!res.ok) throw new Error(`Failed to fetch ${fileName}`);
         const buf = await res.arrayBuffer();
         zip.file(fileName, buf);
@@ -339,7 +339,7 @@ function DownloadSection({
     } finally {
       setImgBusy(false);
     }
-  }, [exerciseId, branch, imageFileNames, RAW]);
+  }, [exerciseId, resolvedImageUrls]);
 
   return (
     <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
