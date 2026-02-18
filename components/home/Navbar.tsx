@@ -8,10 +8,10 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200/60 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex items-center justify-between px-6 py-5">
+      <div className="mx-auto flex items-center justify-between px-6 py-2">
         {/* Logo & brand */}
         <a href="/" className="flex items-center gap-4">
-          <div className="relative h-[150px] w-[150px] shrink-0">
+          <div className="relative h-[80px] w-[80px] shrink-0">
             <Image
               src="/logo.png"
               alt="Open Exercise Database logo"
@@ -19,14 +19,14 @@ export default function Navbar() {
               className="rounded-lg object-contain"
             />
           </div>
-          <span className="self-center translate-y-3 text-3xl font-semibold text-gray-900 tracking-tight leading-tight">
+          <span className="self-center text-xl font-semibold text-gray-900 tracking-tight leading-tight">
             Open Exercise Database
           </span>
         </a>
 
         {/* Desktop links */}
         <div className="hidden lg:flex items-center gap-8">
-          <div className="flex items-center gap-6 text-lg font-medium text-gray-600">
+          <div className="flex items-center gap-6 text-sm font-medium text-gray-600">
             <a href="/documentation" className="hover:text-primary transition-colors">
               What is the OEDB
             </a>
@@ -47,13 +47,13 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <a
               href="/explore"
-              className="rounded-lg bg-primary px-5 py-2.5 text-lg font-medium text-white shadow-sm hover:bg-primary-deep transition-colors"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-deep transition-colors"
             >
               Browse exercises
             </a>
             <a
               href="/add"
-              className="rounded-lg border border-gray-300 px-5 py-2.5 text-lg font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors"
+              className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:border-primary hover:text-primary transition-colors"
             >
               Add an exercise
             </a>
