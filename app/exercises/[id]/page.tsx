@@ -215,6 +215,11 @@ export default function ExerciseDetailPage() {
           <MetadataSection metadata={data.metadata} />
         </div>
 
+        {/* Download */}
+        <div className="mt-10">
+          <DownloadSection exerciseId={data.id} branch={data.branch} />
+        </div>
+
         {/* Footer actions */}
         <div className="mt-10 flex flex-wrap gap-3 border-t border-gray-200 pt-8 pb-4">
           <Link
@@ -269,6 +274,67 @@ function SummaryItem({ label, value }: { label: string; value: string }) {
       <span className="font-semibold text-gray-800">{label}:</span>
       <span>{value}</span>
     </div>
+  );
+}
+
+function DownloadSection({ exerciseId, branch }: { exerciseId: string; branch: string }) {
+  const [downloading, setDownloading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    setError(false);
+    try {
+      const url = `https://raw.githubusercontent.com/rania-is/samplejson/${branch}/exercises/${exerciseId}.json`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch");
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `${exerciseId}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    } catch {
+      setError(true);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return (
+    <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+      <h2 className="text-lg font-bold text-gray-900">Download Exercise</h2>
+      <p className="mt-1.5 text-sm text-gray-500">
+        Download the full structured JSON representation of this exercise.
+      </p>
+      <button
+        onClick={handleDownload}
+        disabled={downloading}
+        className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+          />
+        </svg>
+        {downloading ? "Downloading..." : "Download JSON"}
+      </button>
+      {error && (
+        <p className="mt-3 text-sm text-red-600">
+          Unable to download this exercise at the moment.
+        </p>
+      )}
+    </section>
   );
 }
 
