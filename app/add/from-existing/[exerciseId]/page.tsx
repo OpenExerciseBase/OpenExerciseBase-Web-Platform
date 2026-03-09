@@ -30,17 +30,10 @@ import PreviewPanel from "@/components/add-form/PreviewPanel";
 import SubmitModal from "@/components/add-form/SubmitModal";
 import ErrorBanner from "@/components/add-form/ErrorBanner";
 
-const RELATIONSHIP_OPTIONS = [
-  { value: "", label: "No specific relationship" },
-  { value: "variation", label: "Variation" },
-  { value: "progression", label: "Progression" },
-  { value: "regression", label: "Regression" },
-  { value: "similar", label: "Similar exercise" },
-];
-
 function hydrateFormFromTemplate(
   ex: Record<string, unknown>,
-  newName: string
+  newName: string,
+  originalId: string
 ): ExerciseFormState {
   const rawVars = Array.isArray(ex.variations)
     ? (ex.variations as Record<string, unknown>[])
@@ -82,7 +75,10 @@ function hydrateFormFromTemplate(
           notes: m.notes ?? null,
         }))
       : [],
-    variations,
+    variations: [
+      ...variations,
+      { id: originalId, variationDescription: "" },
+    ],
     variationSuggestions,
     relationships: [],
     imageURLs: [],
@@ -101,7 +97,6 @@ export default function FromExistingFormPage() {
   const [templateName, setTemplateName] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [templateTrack, setTemplateTrack] = useState("");
-  const [relationship, setRelationship] = useState("");
 
   /* ── Loading ── */
   const [loading, setLoading] = useState(true);
@@ -136,7 +131,8 @@ export default function FromExistingFormPage() {
         setTemplateName(name);
         setTemplateId(data.id ?? exerciseId);
         setTemplateTrack(data.track ?? track);
-        setForm(hydrateFormFromTemplate(data, name));
+        const origId = data.id ?? exerciseId;
+        setForm(hydrateFormFromTemplate(data, name, origId));
       } catch {
         if (!cancelled) setFetchError(true);
       } finally {
@@ -187,24 +183,6 @@ export default function FromExistingFormPage() {
     try {
       const exercise = assembleJSON(form);
 
-      // Add relationship to original exercise if selected
-      if (relationship && templateId) {
-        const descriptionMap: Record<string, string> = {
-          variation: "Derived as a variation from the original exercise",
-          progression: "Derived as a progression from the original exercise",
-          regression: "Derived as a regression from the original exercise",
-          similar: "Created as a similar exercise based on the original",
-        };
-        const variations = Array.isArray(exercise.variations)
-          ? (exercise.variations as Record<string, unknown>[])
-          : [];
-        variations.push({
-          id: templateId,
-          variationDescription: descriptionMap[relationship] ?? "Related to the original exercise",
-        });
-        exercise.variations = variations;
-      }
-
       // Convert uploaded image files to base64
       const fileImages = await Promise.all(
         form.imageFiles.map(async (file) => ({
@@ -228,7 +206,7 @@ export default function FromExistingFormPage() {
     } finally {
       setSubmitting(false);
     }
-  }, [form, validation.valid, submitting, relationship, templateId]);
+  }, [form, validation.valid, submitting]);
 
   /* ── Loading & error states ── */
   if (loading) {
@@ -321,7 +299,7 @@ export default function FromExistingFormPage() {
           }`}
         >
           {/* Template banner */}
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
             <div className="flex items-start gap-3">
               <svg className="h-5 w-5 text-primary shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
@@ -336,27 +314,6 @@ export default function FromExistingFormPage() {
                 </p>
               </div>
             </div>
-
-            <div>
-              <label
-                htmlFor="relationship"
-                className="block text-xs font-medium text-gray-700"
-              >
-                Relationship to original exercise
-              </label>
-              <select
-                id="relationship"
-                value={relationship}
-                onChange={(e) => setRelationship(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-auto"
-              >
-                {RELATIONSHIP_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
 
           {/* Images notice */}
@@ -370,7 +327,7 @@ export default function FromExistingFormPage() {
                   Images are not copied from the original exercise
                 </p>
                 <p className="mt-0.5 text-xs text-amber-700">
-                  Please upload new images or generate images using AI if needed.
+                  Please upload new images if needed.
                 </p>
               </div>
             </div>
