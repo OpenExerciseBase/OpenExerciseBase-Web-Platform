@@ -166,7 +166,7 @@ export default function StudyEntryPage() {
               This study requires GitHub authentication. Please sign in to check your assignment and begin reviewing.
             </p>
             <a
-              href="/api/auth/github"
+              href="/api/auth/github?returnTo=/study"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 transition-colors"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
