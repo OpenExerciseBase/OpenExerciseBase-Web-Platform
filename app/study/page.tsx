@@ -223,11 +223,24 @@ export default function StudyEntryPage() {
               <h1 className="mt-4 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                 {assignment.title || "Expert Exercise Review Study"}
               </h1>
-              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-gray-500">
-                {assignment.description || "Please review each assigned exercise using the structured questionnaire."}
-              </p>
               <p className="mt-2 text-xs text-gray-400">
                 Signed in as <span className="font-medium text-gray-600">{session.username}</span>
+              </p>
+            </div>
+
+            {/* Introduction */}
+            <div className="rounded-2xl border border-gray-200 bg-white px-8 py-6 shadow-sm space-y-4 text-sm leading-relaxed text-gray-600">
+              <p>
+                Thank you for contributing your professional expertise to the Open Exercise Database review process.
+              </p>
+              <p>
+                In this session, you will review one or more exercise entries. For each entry, you will be asked to evaluate the written content, the image, identify any issues, and make a final decision about whether the exercise should be accepted into the validated collection.
+              </p>
+              <p>
+                Please read each exercise carefully before answering. There is no time pressure, but try to base your judgments on your professional standards.
+              </p>
+              <p className="font-medium text-gray-900">
+                When you are ready, click Start reviewing to view the first exercise.
               </p>
             </div>
 

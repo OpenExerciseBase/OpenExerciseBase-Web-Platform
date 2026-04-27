@@ -58,19 +58,18 @@ interface Progress {
 
 interface Ratings {
   q1_overallQuality: number | null;
-  q2_appropriateness: number | null;
-  q3_clarity: number | null;
-  q4_completeness: number | null;
-  q5_performanceMetrics: number | null;
-  q6_feasibility: number | null;
-  q7_useInPractice: number | null;
+  q2_instructionClarity: number | null;
+  q3_biomechanics: number | null;
+  q4_safety: number | null;
+  q5_classification: number | null;
+  q6_useInPractice: number | null;
+  q7_imageQuality: number | null;
 }
 
 interface Safety {
-  q8_hasConcern: boolean | null;
-  q9_issueTypes: string[];
-  q9_otherText: string;
-  q10_comment: string;
+  q8_issueTypes: string[];
+  q8_otherText: string;
+  q9_comment: string;
 }
 
 interface Detectability {
@@ -91,18 +90,17 @@ interface FormState {
 const defaultForm: FormState = {
   ratings: {
     q1_overallQuality: null,
-    q2_appropriateness: null,
-    q3_clarity: null,
-    q4_completeness: null,
-    q5_performanceMetrics: null,
-    q6_feasibility: null,
-    q7_useInPractice: null,
+    q2_instructionClarity: null,
+    q3_biomechanics: null,
+    q4_safety: null,
+    q5_classification: null,
+    q6_useInPractice: null,
+    q7_imageQuality: null,
   },
   safety: {
-    q8_hasConcern: null,
-    q9_issueTypes: [],
-    q9_otherText: "",
-    q10_comment: "",
+    q8_issueTypes: [],
+    q8_otherText: "",
+    q9_comment: "",
   },
   detectability: {
     q11_guessAi: null,
@@ -210,6 +208,26 @@ export default function StudyReviewPage() {
       const saved = localStorage.getItem(draftKey);
       if (saved) {
         const parsed = JSON.parse(saved);
+        // Migrate old drafts that used the previous safety schema
+        if (parsed.safety && !Array.isArray(parsed.safety.q8_issueTypes)) {
+          parsed.safety = {
+            q8_issueTypes: Array.isArray(parsed.safety.q9_issueTypes) ? parsed.safety.q9_issueTypes : [],
+            q8_otherText: parsed.safety.q9_otherText ?? "",
+            q9_comment: parsed.safety.q10_comment ?? parsed.safety.q9_comment ?? "",
+          };
+        }
+        // Migrate old rating field names
+        if (parsed.ratings && parsed.ratings.q2_appropriateness !== undefined) {
+          parsed.ratings = {
+            q1_overallQuality: parsed.ratings.q1_overallQuality ?? null,
+            q2_instructionClarity: parsed.ratings.q3_clarity ?? null,
+            q3_biomechanics: null,
+            q4_safety: null,
+            q5_classification: parsed.ratings.q2_appropriateness ?? null,
+            q6_useInPractice: parsed.ratings.q7_useInPractice ?? null,
+            q7_imageQuality: null,
+          };
+        }
         setForm(parsed);
       }
     } catch { /* ignore */ }
@@ -336,16 +354,12 @@ export default function StudyReviewPage() {
     const errors: string[] = [];
     const r = form.ratings;
     if (r.q1_overallQuality === null) errors.push("Q1: Overall quality is required.");
-    if (r.q2_appropriateness === null) errors.push("Q2: Appropriateness rating is required.");
-    if (r.q3_clarity === null) errors.push("Q3: Instruction clarity rating is required.");
-    if (r.q4_completeness === null) errors.push("Q4: Completeness rating is required.");
-    if (r.q5_performanceMetrics === null) errors.push("Q5: Performance metrics rating is required.");
-    if (r.q6_feasibility === null) errors.push("Q6: Practical feasibility rating is required.");
-    if (r.q7_useInPractice === null) errors.push("Q7: Use in practice rating is required.");
-    if (form.safety.q8_hasConcern === null) errors.push("Q8: Safety concern flag is required.");
-    if (form.safety.q8_hasConcern === true && form.safety.q9_issueTypes.length === 0) {
-      errors.push("Q9: At least one issue type is required when a safety concern is flagged.");
-    }
+    if (r.q2_instructionClarity === null) errors.push("Q2: Instruction clarity rating is required.");
+    if (r.q3_biomechanics === null) errors.push("Q3: Biomechanics rating is required.");
+    if (r.q4_safety === null) errors.push("Q4: Safety rating is required.");
+    if (r.q5_classification === null) errors.push("Q5: Classification rating is required.");
+    if (r.q6_useInPractice === null) errors.push("Q6: Use in practice rating is required.");
+    if (r.q7_imageQuality === null) errors.push("Q7: Image quality rating is required.");
     if (form.detectability.q11_guessAi === null) errors.push("Q11: Origin guess is required.");
     if (form.detectability.q12_confidence === null) errors.push("Q12: Confidence rating is required.");
     if (form.decision === null) errors.push("Decision: Please select an outcome.");
@@ -372,18 +386,17 @@ export default function StudyReviewPage() {
         submittedAt: new Date().toISOString(),
         ratings: {
           q1_overallQuality: form.ratings.q1_overallQuality,
-          q2_appropriateness: form.ratings.q2_appropriateness,
-          q3_clarity: form.ratings.q3_clarity,
-          q4_completeness: form.ratings.q4_completeness,
-          q5_performanceMetrics: form.ratings.q5_performanceMetrics,
-          q6_feasibility: form.ratings.q6_feasibility,
-          q7_useInPractice: form.ratings.q7_useInPractice,
+          q2_instructionClarity: form.ratings.q2_instructionClarity,
+          q3_biomechanics: form.ratings.q3_biomechanics,
+          q4_safety: form.ratings.q4_safety,
+          q5_classification: form.ratings.q5_classification,
+          q6_useInPractice: form.ratings.q6_useInPractice,
+          q7_imageQuality: form.ratings.q7_imageQuality,
         },
         safety: {
-          q8_hasConcern: form.safety.q8_hasConcern,
-          q9_issueTypes: form.safety.q9_issueTypes,
-          q9_otherText: form.safety.q9_otherText || null,
-          q10_comment: form.safety.q10_comment,
+          q8_issueTypes: form.safety.q8_issueTypes,
+          q8_otherText: form.safety.q8_otherText || null,
+          q9_comment: form.safety.q9_comment,
         },
         detectability: {
           q11_guessAi: form.detectability.q11_guessAi,
@@ -663,7 +676,7 @@ export default function StudyReviewPage() {
             {/* Section A */}
             <SectionCard
               title="Section A: Core Quality Ratings"
-              intro="This section assesses the overall quality and completeness of the exercise entry using professional judgment."
+              intro="Scale: 1 = Strongly disagree, 7 = Strongly agree"
             >
               <LikertQuestion
                 id="q1"
@@ -676,172 +689,63 @@ export default function StudyReviewPage() {
               />
               <LikertQuestion
                 id="q2"
-                label="The exercise is appropriate and internally consistent with its stated category, targeted body parts, equipment, and location"
+                label="The instructions are clear and unambiguous"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
-                value={form.ratings.q2_appropriateness}
-                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q2_appropriateness: v } }))}
-                showError={showValidation && form.ratings.q2_appropriateness === null}
+                value={form.ratings.q2_instructionClarity}
+                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q2_instructionClarity: v } }))}
+                showError={showValidation && form.ratings.q2_instructionClarity === null}
               />
               <LikertQuestion
                 id="q3"
-                label="The movement instructions are clear and actionable enough for correct execution"
+                label="The movement described is biomechanically sound"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
-                value={form.ratings.q3_clarity}
-                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q3_clarity: v } }))}
-                showError={showValidation && form.ratings.q3_clarity === null}
+                value={form.ratings.q3_biomechanics}
+                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q3_biomechanics: v } }))}
+                showError={showValidation && form.ratings.q3_biomechanics === null}
               />
               <LikertQuestion
                 id="q4"
-                label="The exercise entry contains sufficient information to be usable including instructions, performance metrics, and at least one meaningful modification when applicable"
+                label="The exercise can be performed safely as described"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
-                value={form.ratings.q4_completeness}
-                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q4_completeness: v } }))}
-                showError={showValidation && form.ratings.q4_completeness === null}
+                value={form.ratings.q4_safety}
+                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q4_safety: v } }))}
+                showError={showValidation && form.ratings.q4_safety === null}
               />
               <LikertQuestion
                 id="q5"
-                label="The specified performance metrics such as repetitions, duration, load, intensity, or heart rate targets are appropriate and actionable for this exercise"
+                label="The classification (target muscles, equipment, category, and performance metrics) accurately reflects the exercise"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
-                value={form.ratings.q5_performanceMetrics}
-                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q5_performanceMetrics: v } }))}
-                showError={showValidation && form.ratings.q5_performanceMetrics === null}
+                value={form.ratings.q5_classification}
+                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q5_classification: v } }))}
+                showError={showValidation && form.ratings.q5_classification === null}
               />
               <LikertQuestion
                 id="q6"
-                label="The exercise is feasible and realistic given the listed equipment and location"
+                label="I would consider using or recommending this exercise after normal professional review"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
-                value={form.ratings.q6_feasibility}
-                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q6_feasibility: v } }))}
-                showError={showValidation && form.ratings.q6_feasibility === null}
+                value={form.ratings.q6_useInPractice}
+                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q6_useInPractice: v } }))}
+                showError={showValidation && form.ratings.q6_useInPractice === null}
               />
               <LikertQuestion
                 id="q7"
-                label="After normal professional review, I would consider using or recommending this exercise entry"
+                label="The image is accurate, clear, and consistent with the written instructions"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
-                value={form.ratings.q7_useInPractice}
-                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q7_useInPractice: v } }))}
-                showError={showValidation && form.ratings.q7_useInPractice === null}
+                value={form.ratings.q7_imageQuality}
+                onChange={(v) => setForm((f) => ({ ...f, ratings: { ...f.ratings, q7_imageQuality: v } }))}
+                showError={showValidation && form.ratings.q7_imageQuality === null}
               />
             </SectionCard>
 
             {/* Section B */}
             <SectionCard
-              title="Section B: Safety and Issue Detection"
-              intro="This section captures potential safety concerns and common issues."
-            >
-              {/* Q8 */}
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-800">
-                  Does this exercise entry contain any potential safety concern or problematic omission
-                </p>
-                <div className="flex gap-4">
-                  {(["No", "Yes"] as const).map((opt) => {
-                    const val = opt === "Yes";
-                    const selected = form.safety.q8_hasConcern === val;
-                    return (
-                      <button
-                        key={opt}
-                        type="button"
-                        onClick={() =>
-                          setForm((f) => ({
-                            ...f,
-                            safety: {
-                              ...f.safety,
-                              q8_hasConcern: val,
-                              ...(val === false ? { q9_issueTypes: [], q9_otherText: "" } : {}),
-                            },
-                          }))
-                        }
-                        className={`rounded-lg border px-5 py-2 text-sm font-medium transition-colors ${
-                          selected
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-gray-200 text-gray-600 hover:border-gray-300"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-                {showValidation && form.safety.q8_hasConcern === null && (
-                  <p className="text-xs text-red-500">This question is required.</p>
-                )}
-              </div>
-
-              {/* Q9 (conditional) */}
-              {form.safety.q8_hasConcern === true && (
-                <div className="space-y-2 mt-6">
-                  <p className="text-sm font-medium text-gray-800">
-                    What type or types of issue did you notice
-                  </p>
-                  <p className="text-xs text-gray-500">Select all that apply.</p>
-                  <div className="space-y-2">
-                    {ISSUE_TYPES.map((issue) => {
-                      const checked = form.safety.q9_issueTypes.includes(issue);
-                      return (
-                        <label key={issue} className="flex items-start gap-2.5 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() =>
-                              setForm((f) => {
-                                const types = checked
-                                  ? f.safety.q9_issueTypes.filter((t) => t !== issue)
-                                  : [...f.safety.q9_issueTypes, issue];
-                                return { ...f, safety: { ...f.safety, q9_issueTypes: types } };
-                              })
-                            }
-                            className="mt-0.5 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                          />
-                          <span className="text-sm text-gray-700">{issue}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                  {form.safety.q9_issueTypes.includes("Other (please specify)") && (
-                    <input
-                      type="text"
-                      placeholder="Please describe the other issue"
-                      value={form.safety.q9_otherText}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, safety: { ...f.safety, q9_otherText: e.target.value } }))
-                      }
-                      className="mt-2 w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-400 transition-colors"
-                    />
-                  )}
-                  {showValidation && form.safety.q9_issueTypes.length === 0 && (
-                    <p className="text-xs text-red-500">At least one issue type is required.</p>
-                  )}
-                </div>
-              )}
-
-              {/* Q10 */}
-              <div className="space-y-2 mt-6">
-                <p className="text-sm font-medium text-gray-800">
-                  Please briefly describe the main issue or improvement needed
-                </p>
-                <p className="text-xs text-gray-500">Optional.</p>
-                <textarea
-                  rows={3}
-                  value={form.safety.q10_comment}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, safety: { ...f.safety, q10_comment: e.target.value } }))
-                  }
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none focus:border-gray-400 transition-colors resize-y"
-                  placeholder="Describe any issues or suggestions..."
-                />
-              </div>
-            </SectionCard>
-
-            {/* Section C */}
-            <SectionCard
-              title="Section C: AI Detectability and Bias"
+              title="Section B: AI Detectability and Bias"
               intro="This section asks whether you believe the entry was generated by an AI system. There are no right or wrong answers."
             >
               {/* Q11 */}
@@ -1093,14 +997,18 @@ export default function StudyReviewPage() {
 /* ══════════════════════════════════════════════════════════════════════════════ */
 
 const ISSUE_TYPES = [
-  "Missing or unclear instructions",
-  "Inappropriate or missing performance metrics",
-  "Mismatch between category or body parts and the instructions",
-  "Modifications or variations are missing or not meaningful",
-  "Potential safety risk or missing caution",
-  "Unrealistic or impractical for real world use",
-  "Too generic or insufficiently specific",
-  "Other (please specify)",
+  "Biomechanically or technically incorrect",
+  "Unsafe instruction or missing critical safety cue",
+  "Vague, generic, or template like phrasing",
+  "Incorrect classification (body part, equipment, category, or metric)",
+  "Internal inconsistency (e.g., the steps contradict the listed equipment)",
+  "Missing essential information",
+  "Inappropriate variation listed",
+  "Fabricated or implausible content",
+  "Image shows incorrect form or wrong movement phase",
+  "Image contains anatomical errors or visual artifacts",
+  "Image does not match the written instructions",
+  "Other",
 ];
 
 function SectionCard({

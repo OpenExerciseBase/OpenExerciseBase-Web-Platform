@@ -42,6 +42,9 @@ export default function Navbar() {
             <a href="/review" className="hover:text-primary transition-colors">
               Professional exercise review
             </a>
+            <a href="/study" className="hover:text-primary transition-colors">
+              Study
+            </a>
           </div>
 
           <div className="flex items-center gap-3">
@@ -105,6 +108,9 @@ export default function Navbar() {
             </a>
             <a href="/review" className="py-1 hover:text-primary">
               Professional exercise review
+            </a>
+            <a href="/study" className="py-1 hover:text-primary">
+              Study
             </a>
           </div>
           <div className="mt-4 flex flex-col gap-2">
