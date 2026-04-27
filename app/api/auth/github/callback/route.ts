@@ -18,11 +18,19 @@ export async function GET(request: NextRequest) {
 
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
-  const storedState = request.cookies.get("gh_oauth_state")?.value;
-  const returnTo = request.cookies.get("gh_oauth_return")?.value ?? "/review";
+  const storedNonce = request.cookies.get("gh_oauth_state")?.value;
 
-  // Validate state
-  if (!code || !state || state !== storedState) {
+  // Parse state to extract nonce and returnTo
+  let nonce = "";
+  let returnTo = "/review";
+  try {
+    const parsed = JSON.parse(Buffer.from(state ?? "", "base64url").toString());
+    nonce = parsed.nonce ?? "";
+    returnTo = parsed.returnTo ?? "/review";
+  } catch { /* invalid state */ }
+
+  // Validate nonce
+  if (!code || !state || !nonce || nonce !== storedNonce) {
     return NextResponse.redirect(new URL("/review?error=invalid_state", request.url));
   }
 
@@ -64,7 +72,6 @@ export async function GET(request: NextRequest) {
 
   // Clean up OAuth cookies
   response.cookies.delete("gh_oauth_state");
-  response.cookies.delete("gh_oauth_return");
 
   return response;
 }

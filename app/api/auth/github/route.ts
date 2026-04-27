@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
   }
 
   const returnTo = request.nextUrl.searchParams.get("returnTo") ?? "/review";
-  const state = crypto.randomBytes(16).toString("hex");
+  const nonce = crypto.randomBytes(16).toString("hex");
+  const state = Buffer.from(JSON.stringify({ nonce, returnTo })).toString("base64url");
 
   const origin = request.nextUrl.origin;
   const redirectUri = `${origin}/api/auth/github/callback`;
@@ -26,14 +27,7 @@ export async function GET(request: NextRequest) {
   const response = NextResponse.redirect(authorizeUrl);
 
   // Store state + returnTo in a short-lived cookie
-  response.cookies.set("gh_oauth_state", state, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 600,
-    path: "/",
-  });
-  response.cookies.set("gh_oauth_return", returnTo, {
+  response.cookies.set("gh_oauth_state", nonce, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
