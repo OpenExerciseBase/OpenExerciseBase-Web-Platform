@@ -15,7 +15,6 @@ import {
 } from "@/components/exercise-detail/SidebarSections";
 import RelationshipsSection from "@/components/exercise-detail/RelationshipsSection";
 import NotesSection from "@/components/exercise-detail/NotesSection";
-import MetadataSection from "@/components/exercise-detail/MetadataSection";
 
 import type { ExerciseFormState } from "@/components/add-form/types";
 import {
@@ -661,11 +660,6 @@ export default function StudyReviewPage() {
               {/* Notes */}
               <div className="mt-8">
                 <NotesSection notes={exData.commentsNotes} />
-              </div>
-
-              {/* Metadata */}
-              <div className="mt-8">
-                <MetadataSection metadata={exData.metadata as any} />
               </div>
             </div>
 
