@@ -734,7 +734,7 @@ export default function StudyReviewPage() {
               />
               <LikertQuestion
                 id="q7"
-                label="The image is accurate, clear, and consistent with the written instructions"
+                label="Does the image accurately and clearly represent the exercise being described?"
                 lowLabel="Strongly disagree"
                 highLabel="Strongly agree"
                 value={form.ratings.q7_imageQuality}
