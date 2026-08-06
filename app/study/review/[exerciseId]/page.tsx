@@ -249,6 +249,11 @@ export default function StudyReviewPage() {
 
   /* Fetch all data */
   useEffect(() => {
+    // Scroll to top when navigating to a new exercise
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+
     let cancelled = false;
     (async () => {
       try {
@@ -437,9 +442,9 @@ export default function StudyReviewPage() {
       // Navigate to next or complete
       const nextIndex = myExercises.findIndex((id) => !newCompleted.includes(id));
       if (nextIndex === -1) {
-        router.push("/study/complete");
+        router.push("/study/complete", { scroll: true });
       } else {
-        router.push(`/study/review/${encodeURIComponent(myExercises[nextIndex])}`);
+        router.push(`/study/review/${encodeURIComponent(myExercises[nextIndex])}`, { scroll: true });
       }
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "An unexpected error occurred.");
