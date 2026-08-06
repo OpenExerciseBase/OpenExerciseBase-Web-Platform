@@ -13,9 +13,10 @@ const API = "https://api.github.com";
  * Body: { response: StudyResponse, progress: ProgressData }
  */
 export async function POST(request: NextRequest) {
-  const username = request.cookies.get("gh_username")?.value;
-  const token = request.cookies.get("gh_token")?.value;
-  if (!username || !token) {
+  const ghUsername = request.cookies.get("gh_username")?.value;
+  const code = request.cookies.get("study_code")?.value;
+  const identifier = code ?? ghUsername;
+  if (!identifier) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
     await ensureBranch(installToken);
 
     // Write response file
-    const responsePath = `study/responses/${username}/${exerciseId}.json`;
+    const responsePath = `study/responses/${identifier}/${exerciseId}.json`;
     const responseContent = JSON.stringify(response, null, 2);
     const existingResponseSha = await getFileSha(installToken, responsePath);
     await commitFile(
@@ -56,12 +57,12 @@ export async function POST(request: NextRequest) {
       BRANCH,
       responsePath,
       responseContent,
-      `Study response: ${username} reviewed ${exerciseId}`,
+      `Study response: ${identifier} reviewed ${exerciseId}`,
       existingResponseSha ?? undefined
     );
 
     // Write progress file
-    const progressPath = `study/responses/${username}/progress.json`;
+    const progressPath = `study/responses/${identifier}/progress.json`;
     const progressContent = JSON.stringify(progress, null, 2);
     const existingProgressSha = await getFileSha(installToken, progressPath);
     await commitFile(
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       BRANCH,
       progressPath,
       progressContent,
-      `Study progress update: ${username}`,
+      `Study progress update: ${identifier}`,
       existingProgressSha ?? undefined
     );
 

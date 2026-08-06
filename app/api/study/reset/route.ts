@@ -11,13 +11,21 @@ const API = "https://api.github.com";
  * Deletes all study response files and progress for a given user.
  */
 export async function DELETE(request: NextRequest) {
-  const callerUsername = request.cookies.get("gh_username")?.value;
-  const callerToken = request.cookies.get("gh_token")?.value;
-  if (!callerUsername || !callerToken) {
+  const ghUsername = request.cookies.get("gh_username")?.value;
+  const code = request.cookies.get("study_code")?.value;
+  const ghToken = request.cookies.get("gh_token")?.value;
+  const identifier = code ?? ghUsername;
+
+  if (!identifier) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const targetUsername = request.nextUrl.searchParams.get("username") || callerUsername;
+  const targetUsername = request.nextUrl.searchParams.get("username") || identifier;
+
+  // Code users can only reset their own data
+  if (code && targetUsername.toLowerCase() !== code.toLowerCase()) {
+    return NextResponse.json({ error: "Not authorized" }, { status: 403 });
+  }
 
   const config = getAppConfig();
   if (!config) {

@@ -11,8 +11,10 @@ interface Assignment {
   title: string;
   description: string;
   reviewers: {
-    githubUsername: string;
-    exerciseIds: string[];
+    githubUsername?: string;
+    code?: string;
+    assignedExercises?: string[];
+    exerciseIds?: string[];
   }[];
 }
 
@@ -27,6 +29,7 @@ interface Progress {
 interface Session {
   loggedIn: boolean;
   username?: string;
+  code?: boolean;
 }
 
 export default function StudyEntryPage() {
@@ -37,6 +40,9 @@ export default function StudyEntryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notAssigned, setNotAssigned] = useState(false);
+  const [code, setCode] = useState("");
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [codeLoading, setCodeLoading] = useState(false);
 
   const fetchSession = useCallback(async () => {
     const res = await fetch("/api/auth/me");
@@ -59,8 +65,9 @@ export default function StudyEntryPage() {
     };
 
     const reviewer = reviewers.find(
-      (r: { githubUsername?: string }) =>
-        r.githubUsername?.toLowerCase() === username.toLowerCase()
+      (r: { githubUsername?: string; code?: string }) =>
+        (r.githubUsername && r.githubUsername.toLowerCase() === username.toLowerCase()) ||
+        (r.code && r.code.toLowerCase() === username.toLowerCase())
     );
     if (!reviewer) {
       setNotAssigned(true);
@@ -81,6 +88,42 @@ export default function StudyEntryPage() {
     if (!res.ok) return null;
     return (await res.json()) as Progress;
   }, []);
+
+  const submitCode = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCodeLoading(true);
+    setCodeError(null);
+    try {
+      const res = await fetch("/api/study/code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCodeError(data.error || "Invalid code");
+        return;
+      }
+      // Reload session and assignments
+      setLoading(true);
+      const sess = await fetchSession();
+      setSession(sess);
+      if (sess.loggedIn && sess.username) {
+        const { assignment: a, exercises } = await fetchAssignments(sess.username);
+        setAssignment(a);
+        setMyExercises(exercises);
+        if (exercises.length > 0) {
+          const prog = await fetchProgress(sess.username);
+          if (prog) setProgress(prog);
+        }
+      }
+      setLoading(false);
+    } catch {
+      setCodeError("Could not validate code. Please try again.");
+    } finally {
+      setCodeLoading(false);
+    }
+  }, [code, fetchAssignments, fetchProgress, fetchSession]);
 
   useEffect(() => {
     let cancelled = false;
@@ -163,7 +206,7 @@ export default function StudyEntryPage() {
               Expert Exercise Review Study
             </h1>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-gray-500">
-              This study requires GitHub authentication. Please sign in to check your assignment and begin reviewing.
+              Sign in with GitHub or enter your study code to check your assignment and begin reviewing.
             </p>
             <a
               href="/api/auth/github?returnTo=/study"
@@ -174,6 +217,31 @@ export default function StudyEntryPage() {
               </svg>
               Sign in with GitHub
             </a>
+
+            <div className="mt-8 border-t border-gray-200 pt-8">
+              <p className="text-sm font-medium text-gray-700">Or enter your study code</p>
+              <form onSubmit={submitCode} className="mt-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+                  <input
+                    type="text"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="e.g. ABC123"
+                    className="rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={codeLoading || !code.trim()}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors disabled:opacity-50"
+                  >
+                    {codeLoading ? "Checking..." : "Continue with code"}
+                  </button>
+                </div>
+                {codeError && (
+                  <p className="mt-3 text-sm font-medium text-red-600">{codeError}</p>
+                )}
+              </form>
+            </div>
           </div>
         )}
 

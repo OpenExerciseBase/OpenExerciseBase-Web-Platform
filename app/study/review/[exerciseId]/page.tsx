@@ -38,13 +38,18 @@ const COMPLETED_KEY = "study_completed_ids";
 
 /* ── Types ── */
 
-interface Session { loggedIn: boolean; username?: string }
+interface Session { loggedIn: boolean; username?: string; code?: boolean }
 
 interface Assignment {
   studyId: string;
   title: string;
   description: string;
-  reviewers: { githubUsername: string; exerciseIds: string[] }[];
+  reviewers: {
+    githubUsername?: string;
+    code?: string;
+    assignedExercises?: string[];
+    exerciseIds?: string[];
+  }[];
 }
 
 interface Progress {
@@ -253,7 +258,7 @@ export default function StudyReviewPage() {
         if (cancelled) return;
         setSession(sess);
         if (!sess.loggedIn) {
-          setUnauthorized("Please sign in with GitHub to access this study.");
+          setUnauthorized("Please sign in with GitHub or enter a study code to access this study.");
           setLoading(false);
           return;
         }
@@ -274,8 +279,9 @@ export default function StudyReviewPage() {
         setAssignment(assignData);
 
         const reviewer = reviewers.find(
-          (r: { githubUsername?: string }) =>
-            r.githubUsername?.toLowerCase() === sess.username!.toLowerCase()
+          (r: { githubUsername?: string; code?: string }) =>
+            (r.githubUsername && r.githubUsername.toLowerCase() === sess.username!.toLowerCase()) ||
+            (r.code && r.code.toLowerCase() === sess.username!.toLowerCase())
         );
         if (!reviewer) {
           setUnauthorized("You are not assigned to this study.");
