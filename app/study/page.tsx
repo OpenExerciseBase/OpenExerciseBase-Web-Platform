@@ -336,9 +336,9 @@ export default function StudyEntryPage() {
               <h3 className="pt-2 text-sm font-semibold text-gray-900">Final Decision</h3>
               <p>Please choose the outcome you would apply after reviewing this entry.</p>
               <ul className="list-disc pl-5 space-y-1">
-                <li>Accept: accept the exercise entry as is for the purpose of this study.</li>
-                <li>Edit and accept: make edits to the exercise, then accept the edited version for the purpose of this study.</li>
-                <li>Reject: reject the entry for the purpose of this study.</li>
+                <li>Accept: Accept the exercise entry as is, with no changes needed.</li>
+                <li>Edit and accept: Edit the exercise and then accept the revised version. Choose this option if the exercise contains errors, inaccuracies, unclear parts, or other issues that can be corrected or improved without substantially changing the exercise.</li>
+                <li>Reject: Reject the exercise entry. Choose this option if the exercise is fundamentally invalid or would require substantial changes to become valid.</li>
               </ul>
 
               <h3 className="pt-2 text-sm font-semibold text-gray-900">A few practical notes</h3>
