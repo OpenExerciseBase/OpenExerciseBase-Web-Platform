@@ -9,6 +9,8 @@ export interface SubmitRequest {
   exercise: Record<string, unknown>;
   images: SubmitImage[];
   source?: "form" | "ai";
+  contributorName: string;
+  contributorEmail: string;
 }
 
 export interface SubmitResponse {

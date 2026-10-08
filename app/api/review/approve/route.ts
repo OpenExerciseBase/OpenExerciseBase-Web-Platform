@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     const metadata = {
       ...(raw.metadata as Record<string, unknown> ?? {}),
-      reviewStatus: "validated",
+      reviewStatus: "accepted",
       reviewedBy,
       dateReviewed: today,
       reviewNotes: reviewNotes?.trim() || null,

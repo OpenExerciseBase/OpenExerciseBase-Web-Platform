@@ -12,8 +12,8 @@ import {
 } from "@/lib/review-helpers";
 import { addToIndex, removeFromIndex, buildIndexEntry } from "@/lib/github-raw";
 
-const OWNER = "rania-is";
-const REPO = "samplejson";
+const OWNER = "OpenExerciseBase";
+const REPO = "OpenExerciseBase-Database";
 const API = "https://api.github.com";
 
 /**
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     const metadata = {
       ...originalMeta,
-      reviewStatus: "edited and validated",
+      reviewStatus: "accepted_with_edits",
       reviewedBy,
       dateReviewed: today,
       reviewNotes: reviewNotes?.trim() || null,

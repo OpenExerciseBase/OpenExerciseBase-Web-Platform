@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "raw.githubusercontent.com",
-        pathname: "/rania-is/samplejson/**",
+        pathname: "/OpenExerciseBase/OpenExerciseBase-Database/**",
       },
     ],
   },

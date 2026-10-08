@@ -7,8 +7,8 @@ import { buildIndexEntry } from "@/lib/github-raw";
 
 /* ── Config ── */
 
-const OWNER = "rania-is";
-const REPO = "samplejson";
+const OWNER = "OpenExerciseBase";
+const REPO = "OpenExerciseBase-Database";
 const BASE_BRANCH = "community";
 const API = "https://api.github.com";
 
@@ -163,10 +163,20 @@ interface ImagePayload {
   sizeBytes: number;
 }
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function validatePayload(
   exercise: Record<string, unknown> | undefined,
-  images: ImagePayload[] | undefined
+  images: ImagePayload[] | undefined,
+  contributorName: string | undefined,
+  contributorEmail: string | undefined
 ): string | null {
+  if (!contributorName || !contributorName.trim()) {
+    return "Contributor name is required.";
+  }
+  if (!contributorEmail || !EMAIL_RE.test(contributorEmail.trim())) {
+    return "A valid contributor email is required.";
+  }
   if (!exercise || typeof exercise !== "object") {
     return "Missing exercise data.";
   }
@@ -372,6 +382,8 @@ export async function POST(request: NextRequest) {
     mode?: string;
     originalId?: string;
     source?: string;
+    contributorName?: string;
+    contributorEmail?: string;
   };
   try {
     body = await request.json();
@@ -382,10 +394,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { exercise, images = [], mode, originalId, source } = body;
+  const { exercise, images = [], mode, originalId, source, contributorName, contributorEmail } = body;
 
   // Validate
-  const validationError = validatePayload(exercise, images);
+  const validationError = validatePayload(exercise, images, contributorName, contributorEmail);
   if (validationError) {
     return NextResponse.json(
       { ok: false, error: validationError },
@@ -419,6 +431,8 @@ export async function POST(request: NextRequest) {
 
     // Build the final exercise JSON
     const today = todayISO();
+    const contribName = contributorName!.trim().replace(/,/g, "");
+    const contribEmail = contributorEmail!.trim().replace(/,/g, "");
     const finalExercise: Record<string, unknown> = {
       ...exercise,
       id: exerciseId,
@@ -426,8 +440,8 @@ export async function POST(request: NextRequest) {
         imageURLs: normalizedImages.map((img) => img.filename),
       },
       metadata: {
-        createdBy: source === "ai" ? "co-created with AI" : "community",
-        reviewStatus: "community",
+        createdBy: `${source === "ai" ? "community co-created with AI" : "community"},${contribName},${contribEmail}`,
+        reviewStatus: "unreviewed",
         reviewedBy: [],
         dateReviewed: null,
         reviewNotes: null,
@@ -446,7 +460,7 @@ export async function POST(request: NextRequest) {
       normalizedImages,
       {
         originalId: originalId ?? undefined,
-        source: mode === "zip" ? "zip upload" : "form",
+        source: mode === "zip" ? "zip upload" : source === "ai" ? "ai-assisted form" : "form",
       }
     );
 

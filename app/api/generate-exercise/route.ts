@@ -45,7 +45,7 @@ const ALLOWED_LOCATIONS = new Set(["indoor", "outdoor"]);
 
 /* ── System prompt ── */
 
-const SYSTEM_PROMPT = `You are an assistant that generates a single structured exercise draft for the Open Exercise Database.
+const SYSTEM_PROMPT = `You are an assistant that generates a single structured exercise draft for OpenExerciseBase.
 
 Return only valid JSON. Do not include any commentary or markdown. The output must be a single JSON object.
 
@@ -61,13 +61,12 @@ The JSON must follow this schema exactly:
 "location": ["indoor","outdoor"],
 "instructions": [{ "stepNumber": number, "description": "string" }],
 "performanceMetrics": [{ "type": "distance | repetitions | load | duration | heart_rate_percentage | physiological_parameters", "unit": "string | null", "notes": "string | null" }],
-"variations": [],
-"variationSuggestions": [{ "exerciseName": "string", "variationDescription": "string" }],
+"variations": [{ "variationDescription": "string" }],
 "relationships": [],
 "mediaContent": { "imageURLs": [] },
 "metadata": {
 "createdBy": "co-created with AI",
-"reviewStatus": "community",
+"reviewStatus": "unreviewed",
 "reviewedBy": [],
 "dateReviewed": null,
 "reviewNotes": null,
@@ -282,20 +281,16 @@ function validateAndNormalize(
     raw.performanceMetrics = [];
   }
 
-  // Validate variationSuggestions
-  raw.variations = [];
-  if (Array.isArray(raw.variationSuggestions)) {
-    raw.variationSuggestions = (
-      raw.variationSuggestions as { exerciseName?: string; variationDescription?: string; name?: string; description?: string }[]
-    )
-      .filter((v) => v && (v.exerciseName || v.name) && (v.variationDescription || v.description))
-      .map((v) => ({
-        exerciseName: v.exerciseName ?? v.name ?? "",
-        variationDescription: v.variationDescription ?? v.description ?? "",
-      }));
-  } else {
-    raw.variationSuggestions = [];
-  }
+  // Variations are free text only
+  raw.variations = (
+    Array.isArray(raw.variations)
+      ? (raw.variations as { variationDescription?: string; description?: string }[])
+      : []
+  )
+    .map((v) => String(v?.variationDescription ?? v?.description ?? "").trim())
+    .filter(Boolean)
+    .map((variationDescription) => ({ variationDescription }));
+  delete raw.variationSuggestions;
 
   // Force empty arrays
   raw.relationships = [];
@@ -306,7 +301,7 @@ function validateAndNormalize(
   // Overwrite metadata
   raw.metadata = {
     createdBy: "co-created with AI",
-    reviewStatus: "community",
+    reviewStatus: "unreviewed",
     reviewedBy: [],
     dateReviewed: null,
     reviewNotes: null,

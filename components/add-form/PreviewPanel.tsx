@@ -174,46 +174,43 @@ export default function PreviewPanel({ form }: Props) {
         </Section>
       )}
 
-      {/* Linked variations */}
-      {form.variations.length > 0 && (
-        <Section title="Linked variations">
+      {/* Variations */}
+      {form.variations.some((v) => v.variationDescription.trim()) && (
+        <Section title="Variations">
           <div className="space-y-2">
-            {form.variations.map((v, i) => (
-              <div
-                key={i}
-                className="rounded-xl border border-gray-200 bg-white px-3 py-2"
-              >
-                {v.id && (
-                  <span className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 mb-1">
-                    {v.id}
-                  </span>
-                )}
-                <p className="text-sm text-gray-700">
-                  {v.variationDescription || "No description"}
-                </p>
-              </div>
-            ))}
+            {form.variations
+              .filter((v) => v.variationDescription.trim())
+              .map((v, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-gray-200 bg-white px-3 py-2"
+                >
+                  <p className="text-sm text-gray-700">{v.variationDescription}</p>
+                </div>
+              ))}
           </div>
         </Section>
       )}
 
-      {/* Variation suggestions */}
-      {form.variationSuggestions.length > 0 && (
-        <Section title="Suggested variations">
+      {/* Relationships */}
+      {form.relationships.length > 0 && (
+        <Section title="Relationships">
           <div className="space-y-2">
-            {form.variationSuggestions.map((s, i) => (
+            {form.relationships.map((r, i) => (
               <div
                 key={i}
                 className="rounded-xl border border-gray-200 bg-white px-3 py-2"
               >
-                <span className="text-sm font-medium text-gray-900">
-                  {s.exerciseName || "Unnamed"}
+                <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                  {formatSnakeCase(r.type)}
                 </span>
-                {s.variationDescription && (
-                  <p className="mt-0.5 text-xs text-gray-500">
-                    {s.variationDescription}
-                  </p>
+                <span className="ml-2 text-sm font-medium text-gray-900">
+                  {r.target ? r.target.id || "No target" : r.targetName || "Unnamed"}
+                </span>
+                {!r.target && (
+                  <span className="ml-2 text-[10px] text-gray-400">suggestion</span>
                 )}
+                {r.note && <p className="mt-0.5 text-xs text-gray-500">{r.note}</p>}
               </div>
             ))}
           </div>

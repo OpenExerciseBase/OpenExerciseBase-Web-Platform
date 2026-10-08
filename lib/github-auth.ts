@@ -73,7 +73,7 @@ export async function fetchGitHubUsername(accessToken: string): Promise<string |
 
 /** Check if a username is in the verified reviewers list. */
 export async function isVerifiedReviewer(username: string): Promise<boolean> {
-  const REPO = "rania-is/samplejson";
+  const REPO = "OpenExerciseBase/OpenExerciseBase-Database";
   const url = `https://raw.githubusercontent.com/${REPO}/main/config/verified_reviewers.json`;
   try {
     const res = await fetch(url, { next: { revalidate: 60 } });

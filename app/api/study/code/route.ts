@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const RAW_BASE = "https://raw.githubusercontent.com/rania-is/samplejson";
+const RAW_BASE = "https://raw.githubusercontent.com/OpenExerciseBase/OpenExerciseBase-Database";
 
 /**
  * POST /api/study/code

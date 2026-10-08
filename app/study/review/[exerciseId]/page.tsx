@@ -21,18 +21,20 @@ import {
   validate,
   assembleJSON,
   defaultFormState,
+  hydrateVariationsAndRelationships,
 } from "@/components/add-form/helpers";
 import ClassificationSection from "@/components/add-form/FormSections/ClassificationSection";
 import BodyEquipmentSection from "@/components/add-form/FormSections/BodyEquipmentSection";
 import InstructionsSectionForm from "@/components/add-form/FormSections/InstructionsSection";
 import PerformanceMetricsSection from "@/components/add-form/FormSections/PerformanceMetricsSection";
 import VariationsSectionForm from "@/components/add-form/FormSections/VariationsSection";
+import RelationshipsSectionForm from "@/components/add-form/FormSections/RelationshipsSection";
 import MediaSection from "@/components/add-form/FormSections/MediaSection";
 import NotesSectionForm from "@/components/add-form/FormSections/NotesSection";
 import ValidationPanel from "@/components/add-form/ValidationPanel";
 import PreviewPanel from "@/components/add-form/PreviewPanel";
 
-const RAW_BASE = "https://raw.githubusercontent.com/rania-is/samplejson";
+const RAW_BASE = "https://raw.githubusercontent.com/OpenExerciseBase/OpenExerciseBase-Database";
 const DRAFT_KEY_PREFIX = "study_draft_";
 const COMPLETED_KEY = "study_completed_ids";
 
@@ -124,22 +126,7 @@ function hydrateFormFromExercise(
   exerciseId: string,
   ex: Record<string, unknown>
 ): ExerciseFormState {
-  const rawVars = Array.isArray(ex.variations) ? (ex.variations as Record<string, unknown>[]) : [];
-  const variations = rawVars
-    .filter((v) => typeof v !== "string" && v.id)
-    .map((v) => ({
-      id: (v.id as string) ?? "",
-      variationDescription: (v.variationDescription as string) ?? (v.description as string) ?? "",
-    }));
-  const variationSuggestions = rawVars
-    .filter((v) => typeof v === "string" || !v.id)
-    .map((v) => {
-      if (typeof v === "string") return { exerciseName: "", variationDescription: v };
-      return {
-        exerciseName: (v.exerciseName as string) ?? (v.name as string) ?? "",
-        variationDescription: (v.variationDescription as string) ?? (v.description as string) ?? "",
-      };
-    });
+  const { variations, relationships } = hydrateVariationsAndRelationships(ex);
 
   return {
     id: exerciseId,
@@ -163,10 +150,7 @@ function hydrateFormFromExercise(
         }))
       : [],
     variations,
-    variationSuggestions,
-    relationships: Array.isArray(ex.relationships)
-      ? (ex.relationships as { type: string; target: { track: string; id: string } }[])
-      : [],
+    relationships,
     imageURLs: (() => {
       const mc = ex.mediaContent as Record<string, unknown> | undefined;
       return Array.isArray(mc?.imageURLs) ? (mc.imageURLs as string[]) : [];
@@ -524,8 +508,7 @@ export default function StudyReviewPage() {
     instructions: (exercise.instructions as { stepNumber: number; description: string }[]) ?? [],
     performanceMetrics: (exercise.performanceMetrics as { type: string; unit: string; notes: string }[]) ?? [],
     variations: (exercise.variations as (string | { id?: string; variationDescription?: string; level?: string; description?: string })[]) ?? [],
-    relationships: (exercise.relationships as { type: string; target: { track: string; id: string } }[]) ?? undefined,
-    relationshipSuggestions: (exercise.relationshipSuggestions as { type: string; targetName: string; note: string }[]) ?? undefined,
+    relationships: hydrateVariationsAndRelationships(exercise).relationships,
     commentsNotes: (Array.isArray(exercise.commentsNotes) ? exercise.commentsNotes : typeof exercise.commentsNotes === "string" ? [exercise.commentsNotes] : []) as string[],
     metadata: (exercise.metadata as Record<string, unknown>) ?? {},
     resolvedImageUrls: Array.isArray(exercise.resolvedImageUrls) && (exercise.resolvedImageUrls as string[]).length > 0
@@ -664,7 +647,6 @@ export default function StudyReviewPage() {
               <div className="mt-8">
                 <RelationshipsSection
                   relationships={exData.relationships}
-                  relationshipSuggestions={exData.relationshipSuggestions}
                 />
               </div>
 
@@ -914,6 +896,7 @@ export default function StudyReviewPage() {
                       <InstructionsSectionForm form={editForm} onChange={onEditFormChange} />
                       <PerformanceMetricsSection form={editForm} onChange={onEditFormChange} />
                       <VariationsSectionForm form={editForm} onChange={onEditFormChange} />
+                      <RelationshipsSectionForm form={editForm} onChange={onEditFormChange} />
                       <MediaSection form={editForm} onChange={onEditFormChange} />
                       <NotesSectionForm form={editForm} onChange={onEditFormChange} />
                     </div>

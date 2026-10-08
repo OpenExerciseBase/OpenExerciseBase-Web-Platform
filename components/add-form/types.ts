@@ -12,21 +12,18 @@ export interface PerformanceMetric {
 }
 
 export interface Variation {
-  id: string;
   variationDescription: string;
 }
 
-export interface VariationSuggestion {
-  exerciseName: string;
-  variationDescription: string;
-}
-
+/** Link to an existing exercise, or (when none exists yet) a named suggestion. */
 export interface Relationship {
   type: string;
-  target: {
+  target?: {
     track: string;
     id: string;
   };
+  targetName?: string;
+  note?: string;
 }
 
 export interface ExerciseFormState {
@@ -40,7 +37,6 @@ export interface ExerciseFormState {
   instructions: InstructionStep[];
   performanceMetrics: PerformanceMetric[];
   variations: Variation[];
-  variationSuggestions: VariationSuggestion[];
   relationships: Relationship[];
   imageURLs: string[];
   imageFiles: File[];

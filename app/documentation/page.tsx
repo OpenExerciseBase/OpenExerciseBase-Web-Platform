@@ -61,7 +61,7 @@ export default function DocumentationPage() {
       <div className="border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-6xl px-6 py-14 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Documentation</h1>
-          <p className="mt-3 text-base text-gray-500">Open Exercise Database</p>
+          <p className="mt-3 text-base text-gray-500">OpenExerciseBase</p>
         </div>
       </div>
 
@@ -100,7 +100,7 @@ export default function DocumentationPage() {
           {/* 1. Introduction */}
           {/* ════════════════════════════════════════════ */}
           <Section id="introduction" title="1. Introduction">
-            <P>The Open Exercise Database is an open, structured, and professionally validated repository of physical exercises designed to serve researchers, developers, clinicians, educators, and exercise professionals.</P>
+            <P>OpenExerciseBase is an open, structured, and professionally validated repository of physical exercises designed to serve researchers, developers, clinicians, educators, and exercise professionals.</P>
             <P>The database provides machine readable, consistently structured exercise descriptions that can be used in:</P>
             <UL items={[
               "Research studies",
@@ -152,7 +152,7 @@ export default function DocumentationPage() {
           {/* 3. Purpose */}
           {/* ════════════════════════════════════════════ */}
           <Section id="purpose" title="3. Purpose of the Database">
-            <P>The Open Exercise Database aims to provide:</P>
+            <P>OpenExerciseBase aims to provide:</P>
             <UL items={[
               "A standardized representation of exercises",
               "A consistent schema for structured data",
@@ -224,8 +224,11 @@ export default function DocumentationPage() {
             <P>This enables integration into tracking systems, research protocols, and digital monitoring platforms.</P>
 
             <H3 id="ds-variations">4.4 Variations and Relationships</H3>
-            <P>Exercises may reference other exercises through structured relationships.</P>
-            <P>These relationships may represent variations, progressions, regressions, or closely related movements.</P>
+            <P>Two separate fields describe how an exercise relates to others.</P>
+            <UL items={[
+              "Relationships are typed, machine readable links to other exercises: variation of, progression of, regression of, similar to, or replacement for. When the related exercise is not in the database yet, a relationship can name it as a suggestion instead of linking to an ID.",
+              "Variations are short free text descriptions of ways to change the exercise, for example an easier, harder, or equipment free version. They do not link to other exercises.",
+            ]} />
             <P>This supports structured linking between related exercises and enables interoperability across systems.</P>
 
             <H3 id="ds-media">4.5 Media Content</H3>
@@ -258,7 +261,7 @@ export default function DocumentationPage() {
               "Deduplication status",
             ]} />
             <P>Review statuses include:</P>
-            <UL items={["Community", "Validated", "Edited and validated", "Rejected"]} />
+            <UL items={["Unreviewed", "Accepted", "Accepted with edits", "Rejected"]} />
             <P>This structure ensures accountability, reproducibility, and auditability.</P>
           </Section>
 
@@ -297,7 +300,7 @@ export default function DocumentationPage() {
           {/* 7. Use Cases */}
           {/* ════════════════════════════════════════════ */}
           <Section id="use-cases" title="7. Use Cases">
-            <P>The Open Exercise Database can be used for:</P>
+            <P>OpenExerciseBase can be used for:</P>
 
             <H3>Research</H3>
             <UL items={[
@@ -360,7 +363,7 @@ export default function DocumentationPage() {
           {/* Appendix A */}
           {/* ════════════════════════════════════════════ */}
           <Section id="appendix-a" title="Appendix A: Data Schema Specification">
-            <P>This appendix defines the structured representation used in the Open Exercise Database. The schema is designed to be machine readable, consistent across entries, and extensible over time.</P>
+            <P>This appendix defines the structured representation used in OpenExerciseBase. The schema is designed to be machine readable, consistent across entries, and extensible over time.</P>
             <P>All exercises are stored as individual JSON objects using a standardized structure.</P>
 
             <H3 id="a1">A.1 Top Level Structure</H3>
@@ -375,7 +378,8 @@ export default function DocumentationPage() {
   "location": ["string"],
   "instructions": [InstructionStep],
   "performanceMetrics": [PerformanceMetric],
-  "variations": [VariationReference],
+  "variations": [Variation],
+  "relationships": [Relationship],
   "mediaContent": MediaContent,
   "metadata": Metadata,
   "commentsNotes": ["string"]
@@ -482,21 +486,31 @@ export default function DocumentationPage() {
 
             <H3 id="a5">A.5 Variations and Relationships</H3>
 
-            <H4>A.5.1 variations</H4>
-            <P>Type: <code>array of VariationReference</code><br />Required: yes (may be empty)</P>
+            <H4>A.5.1 relationships</H4>
+            <P>Type: <code>array of Relationship</code><br />Required: yes (may be empty)</P>
+            <P>A relationship is either a link to an existing exercise:</P>
+            <Code>{`{
+  "type": "string",
+  "target": { "track": "string", "id": "string" },
+  "note": "string"   // optional
+}`}</Code>
+            <P>or, when the related exercise does not exist in the database yet, a named suggestion:</P>
+            <Code>{`{
+  "type": "string",
+  "targetName": "string",
+  "note": "string"
+}`}</Code>
+            <P>Allowed values for <code>type</code>:</P>
+            <UL items={["variation_of", "progression_of", "regression_of", "similar_to", "replacement_for"]} />
+            <P>The type reads from this exercise to the target, for example <code>progression_of</code> means this exercise is a progression of the target. <code>track</code> is <code>validated</code> or <code>community</code>. A linked target must exist in the database.</P>
+
+            <H4>A.5.2 variations</H4>
+            <P>Type: <code>array of Variation</code><br />Required: yes (may be empty)</P>
             <P>Structure:</P>
             <Code>{`{
-  "id": "string",
   "variationDescription": "string"
 }`}</Code>
-            <P>References related exercises by identifier. These relationships may represent:</P>
-            <UL items={["Variation", "Progression", "Regression", "Closely related movement"]} />
-            <P>The referenced exercise must exist in the database.</P>
-            <P>Alternatively, variations may be recorded as a suggestion rather than a strict reference:</P>
-            <Code>{`{
-  "exerciseName": "string",
-  "variationDescription": "string"
-}`}</Code>
+            <P>Free text descriptions of ways to modify this exercise. Variations do not reference other exercises. Use <code>relationships</code> for links.</P>
 
             <H3 id="a6">A.6 Media Content</H3>
 
@@ -534,11 +548,18 @@ export default function DocumentationPage() {
 
             <H4>A.7.1.1 createdBy</H4>
             <P>Allowed values:</P>
-            <UL items={["community author", "ai generated", "co generated with ai", "professional"]} />
+            <UL items={[
+              "professional",
+              "ai generated",
+              "community,<name>,<email>: submitted through the platform by a community contributor",
+              "community co-created with AI,<name>,<email>: submitted by a contributor who started from an AI generated draft",
+            ]} />
+            <P>For community submissions the value has three comma separated parts: the origin, the contributor name, and the contributor email. Commas are removed from the name and email.</P>
 
             <H4>A.7.1.2 reviewStatus</H4>
             <P>Allowed values:</P>
-            <UL items={["community", "validated", "edited and validated", "rejected"]} />
+            <UL items={["unreviewed", "accepted", "accepted_with_edits", "rejected"]} />
+            <P><code>unreviewed</code>: submitted and not yet reviewed. <code>accepted</code>: reviewed and accepted as written. <code>accepted_with_edits</code>: reviewed, edited by the reviewer, then accepted. <code>rejected</code>: reviewed and not accepted, including exercises marked as duplicates (see <code>duplicateOf</code>).</P>
 
             <H4>A.7.1.3 reviewedBy</H4>
             <P>Array of GitHub usernames who performed validation.</P>
@@ -593,7 +614,7 @@ export default function DocumentationPage() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
               Home
             </Link>
-            <p className="text-[12px] text-gray-400">Open Exercise Database Documentation</p>
+            <p className="text-[12px] text-gray-400">OpenExerciseBase Documentation</p>
           </div>
         </article>
       </div>

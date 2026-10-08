@@ -7,8 +7,8 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
-const OWNER = "rania-is";
-const REPO = "samplejson";
+const OWNER = "OpenExerciseBase";
+const REPO = "OpenExerciseBase-Database";
 const API = "https://api.github.com";
 const RAW_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}`;
 

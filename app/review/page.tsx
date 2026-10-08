@@ -13,7 +13,7 @@ export default function ReviewLandingPage() {
             Professional exercise review
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-gray-600">
-            Help maintain the quality and safety of the Open Exercise Database by reviewing
+            Help maintain the quality and safety of OpenExerciseBase by reviewing
             community-submitted exercises. Every review ensures that exercises are accurate,
             safe, and scientifically sound.
           </p>
@@ -130,8 +130,8 @@ export default function ReviewLandingPage() {
                   <p className="font-medium text-gray-700 mb-1.5">Review actions:</p>
                   <div className="flex flex-wrap gap-2">
                     <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Approve</span>
-                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">Edit and approve</span>
-                    <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">Mark as duplicate</span>
+                    <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">Edit and approve</span>
+                    <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">Mark as duplicate</span>
                     <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">Reject</span>
                   </div>
                 </div>

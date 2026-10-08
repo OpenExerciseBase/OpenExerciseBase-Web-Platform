@@ -12,6 +12,7 @@ import {
   validate,
   assembleJSON,
   defaultFormState,
+  hydrateVariationsAndRelationships,
 } from "@/components/add-form/helpers";
 import { fileToBase64, normalizeFilename } from "@/components/add-form/imageUtils";
 import { submitExercise } from "@/components/add-form/api";
@@ -22,12 +23,14 @@ import BodyEquipmentSection from "@/components/add-form/FormSections/BodyEquipme
 import InstructionsSection from "@/components/add-form/FormSections/InstructionsSection";
 import PerformanceMetricsSection from "@/components/add-form/FormSections/PerformanceMetricsSection";
 import VariationsSection from "@/components/add-form/FormSections/VariationsSection";
+import RelationshipsSection from "@/components/add-form/FormSections/RelationshipsSection";
 import MediaSection from "@/components/add-form/FormSections/MediaSection";
 import NotesSection from "@/components/add-form/FormSections/NotesSection";
 import ValidationPanel from "@/components/add-form/ValidationPanel";
 import ExportBar from "@/components/add-form/ExportBar";
 import PreviewPanel from "@/components/add-form/PreviewPanel";
 import SubmitModal from "@/components/add-form/SubmitModal";
+import ContributorInfoModal, { type ContributorInfo } from "@/components/add-form/ContributorInfoModal";
 import ErrorBanner from "@/components/add-form/ErrorBanner";
 
 function hydrateFormFromTemplate(
@@ -35,24 +38,7 @@ function hydrateFormFromTemplate(
   newName: string,
   originalId: string
 ): ExerciseFormState {
-  const rawVars = Array.isArray(ex.variations)
-    ? (ex.variations as Record<string, unknown>[])
-    : [];
-  const variations = rawVars
-    .filter((v) => typeof v !== "string" && v.id)
-    .map((v) => ({
-      id: (v.id as string) ?? "",
-      variationDescription: (v.variationDescription as string) ?? (v.description as string) ?? "",
-    }));
-  const variationSuggestions = rawVars
-    .filter((v) => typeof v === "string" || !v.id)
-    .map((v) => {
-      if (typeof v === "string") return { exerciseName: "", variationDescription: v };
-      return {
-        exerciseName: (v.exerciseName as string) ?? (v.name as string) ?? "",
-        variationDescription: (v.variationDescription as string) ?? (v.description as string) ?? "",
-      };
-    });
+  const { variations } = hydrateVariationsAndRelationships(ex);
 
   return {
     id: newName.trim() ? generateId(newName) : "",
@@ -75,12 +61,16 @@ function hydrateFormFromTemplate(
           notes: m.notes ?? null,
         }))
       : [],
-    variations: [
-      ...variations,
-      { id: originalId, variationDescription: "" },
+    variations,
+    relationships: [
+      {
+        type: "variation_of",
+        target: {
+          track: ex.track === "community" ? "community" : "validated",
+          id: originalId,
+        },
+      },
     ],
-    variationSuggestions,
-    relationships: [],
     imageURLs: [],
     imageFiles: [],
     commentsNotes: Array.isArray(ex.commentsNotes) ? (ex.commentsNotes as string[]) : [],
@@ -113,6 +103,7 @@ export default function FromExistingFormPage() {
     id: string;
     prUrl: string;
   } | null>(null);
+  const [showContributorModal, setShowContributorModal] = useState(false);
 
   /* ── Fetch template exercise ── */
   useEffect(() => {
@@ -175,7 +166,7 @@ export default function FromExistingFormPage() {
   const validation = useMemo(() => validate(form), [form]);
 
   /* ── Submit handler ── */
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(async (contributor: ContributorInfo) => {
     if (!validation.valid || submitting) return;
     setSubmitting(true);
     setSubmitError(null);
@@ -197,7 +188,10 @@ export default function FromExistingFormPage() {
         exercise,
         images: fileImages,
         source: "form",
+        contributorName: contributor.name,
+        contributorEmail: contributor.email,
       });
+      setShowContributorModal(false);
       setSubmitResult({ id: result.id, prUrl: result.prUrl });
     } catch (err: unknown) {
       const message =
@@ -350,6 +344,7 @@ export default function FromExistingFormPage() {
           <InstructionsSection form={form} onChange={onChange} />
           <PerformanceMetricsSection form={form} onChange={onChange} />
           <VariationsSection form={form} onChange={onChange} />
+          <RelationshipsSection form={form} onChange={onChange} />
           <MediaSection form={form} onChange={onChange} />
           <NotesSection form={form} onChange={onChange} />
         </div>
@@ -380,9 +375,18 @@ export default function FromExistingFormPage() {
         form={form}
         validation={validation}
         onReset={handleReset}
-        onSubmit={handleSubmit}
+        onSubmit={() => setShowContributorModal(true)}
         submitting={submitting}
       />
+
+      {/* Contributor info modal */}
+      {showContributorModal && (
+        <ContributorInfoModal
+          submitting={submitting}
+          onConfirm={handleSubmit}
+          onCancel={() => setShowContributorModal(false)}
+        />
+      )}
 
       {/* Submit success modal */}
       {submitResult && (

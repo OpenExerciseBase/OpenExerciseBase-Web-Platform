@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAppConfig, getInstallationToken, commitFile } from "@/lib/review-helpers";
 
-const OWNER = "rania-is";
-const REPO = "samplejson";
+const OWNER = "OpenExerciseBase";
+const REPO = "OpenExerciseBase-Database";
 const BRANCH = "study/results";
 const API = "https://api.github.com";
 

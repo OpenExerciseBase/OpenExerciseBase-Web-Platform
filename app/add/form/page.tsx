@@ -11,6 +11,7 @@ import {
   validate,
   assembleJSON,
   defaultFormState,
+  hydrateVariationsAndRelationships,
 } from "@/components/add-form/helpers";
 import { fileToBase64, normalizeFilename } from "@/components/add-form/imageUtils";
 import { submitExercise } from "@/components/add-form/api";
@@ -21,12 +22,14 @@ import BodyEquipmentSection from "@/components/add-form/FormSections/BodyEquipme
 import InstructionsSection from "@/components/add-form/FormSections/InstructionsSection";
 import PerformanceMetricsSection from "@/components/add-form/FormSections/PerformanceMetricsSection";
 import VariationsSection from "@/components/add-form/FormSections/VariationsSection";
+import RelationshipsSection from "@/components/add-form/FormSections/RelationshipsSection";
 import MediaSection from "@/components/add-form/FormSections/MediaSection";
 import NotesSection from "@/components/add-form/FormSections/NotesSection";
 import ValidationPanel from "@/components/add-form/ValidationPanel";
 import ExportBar from "@/components/add-form/ExportBar";
 import PreviewPanel from "@/components/add-form/PreviewPanel";
 import SubmitModal from "@/components/add-form/SubmitModal";
+import ContributorInfoModal, { type ContributorInfo } from "@/components/add-form/ContributorInfoModal";
 import ErrorBanner from "@/components/add-form/ErrorBanner";
 
 interface AiImage {
@@ -40,6 +43,7 @@ export default function AddFormPage() {
   const [hasEdited, setHasEdited] = useState(false);
   const [mobileTab, setMobileTab] = useState<"form" | "preview">("form");
   const [aiDraftBanner, setAiDraftBanner] = useState(false);
+  const [aiAssisted, setAiAssisted] = useState(false);
 
   /* ── AI image state ── */
   const [aiImages, setAiImages] = useState<AiImage[]>([]);
@@ -53,6 +57,7 @@ export default function AddFormPage() {
     id: string;
     prUrl: string;
   } | null>(null);
+  const [showContributorModal, setShowContributorModal] = useState(false);
 
   /* ── Hydrate from AI draft (sessionStorage) ── */
   useEffect(() => {
@@ -94,14 +99,7 @@ export default function AddFormPage() {
               notes: m.notes ?? null,
             }))
           : [],
-        variations: [],
-        variationSuggestions: Array.isArray(draft.variations)
-          ? (draft.variations as { exerciseName?: string; name?: string; variationDescription?: string; description?: string }[]).map((v) => ({
-              exerciseName: (v.exerciseName ?? v.name ?? "") as string,
-              variationDescription: (v.variationDescription ?? v.description ?? "") as string,
-            }))
-          : [],
-        relationships: [],
+        ...hydrateVariationsAndRelationships(draft),
         imageURLs: [],
         imageFiles: [],
         commentsNotes: Array.isArray(draft.commentsNotes) ? (draft.commentsNotes as string[]) : [],
@@ -115,6 +113,7 @@ export default function AddFormPage() {
       setForm(hydrated);
       setHasEdited(true);
       setAiDraftBanner(true);
+      setAiAssisted(true);
       if (storedImages.length > 0) {
         setAiImages(storedImages);
       }
@@ -167,6 +166,9 @@ export default function AddFormPage() {
   const handleReset = useCallback(() => {
     setForm(defaultFormState());
     setHasEdited(false);
+    setAiAssisted(false);
+    setAiDraftBanner(false);
+    setAiImages([]);
   }, []);
 
   /* ── Validation ── */
@@ -203,7 +205,7 @@ export default function AddFormPage() {
   }, [form]);
 
   /* ── Submit handler ── */
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(async (contributor: ContributorInfo) => {
     if (!validation.valid || submitting) return;
     setSubmitting(true);
     setSubmitError(null);
@@ -242,7 +244,14 @@ export default function AddFormPage() {
         ];
       }
 
-      const result = await submitExercise({ exercise, images: allImages, source: aiDraftBanner ? "ai" : "form" });
+      const result = await submitExercise({
+        exercise,
+        images: allImages,
+        source: aiAssisted ? "ai" : "form",
+        contributorName: contributor.name,
+        contributorEmail: contributor.email,
+      });
+      setShowContributorModal(false);
       setSubmitResult({ id: result.id, prUrl: result.prUrl });
     } catch (err: unknown) {
       const message =
@@ -251,7 +260,7 @@ export default function AddFormPage() {
     } finally {
       setSubmitting(false);
     }
-  }, [form, validation.valid, submitting, aiImages]);
+  }, [form, validation.valid, submitting, aiImages, aiAssisted]);
 
   return (
     <div className="flex min-h-screen flex-col bg-bg">
@@ -356,6 +365,7 @@ export default function AddFormPage() {
           <InstructionsSection form={form} onChange={onChange} />
           <PerformanceMetricsSection form={form} onChange={onChange} />
           <VariationsSection form={form} onChange={onChange} />
+          <RelationshipsSection form={form} onChange={onChange} />
           <MediaSection form={form} onChange={onChange} />
 
           {/* AI generated image section */}
@@ -457,9 +467,18 @@ export default function AddFormPage() {
         form={form}
         validation={validation}
         onReset={handleReset}
-        onSubmit={handleSubmit}
+        onSubmit={() => setShowContributorModal(true)}
         submitting={submitting}
       />
+
+      {/* Contributor info modal */}
+      {showContributorModal && (
+        <ContributorInfoModal
+          submitting={submitting}
+          onConfirm={handleSubmit}
+          onCancel={() => setShowContributorModal(false)}
+        />
+      )}
 
       {/* Submit success modal */}
       {submitResult && (

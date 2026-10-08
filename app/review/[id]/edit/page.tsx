@@ -10,6 +10,7 @@ import {
   validate,
   assembleJSON,
   defaultFormState,
+  hydrateVariationsAndRelationships,
 } from "@/components/add-form/helpers";
 import { fileToBase64, normalizeFilename } from "@/components/add-form/imageUtils";
 
@@ -19,6 +20,7 @@ import BodyEquipmentSection from "@/components/add-form/FormSections/BodyEquipme
 import InstructionsSection from "@/components/add-form/FormSections/InstructionsSection";
 import PerformanceMetricsSection from "@/components/add-form/FormSections/PerformanceMetricsSection";
 import VariationsSection from "@/components/add-form/FormSections/VariationsSection";
+import RelationshipsSection from "@/components/add-form/FormSections/RelationshipsSection";
 import MediaSection from "@/components/add-form/FormSections/MediaSection";
 import NotesSection from "@/components/add-form/FormSections/NotesSection";
 import ValidationPanel from "@/components/add-form/ValidationPanel";
@@ -36,22 +38,7 @@ function hydrateFormFromExercise(
   exerciseId: string,
   ex: Record<string, unknown>
 ): ExerciseFormState {
-  const rawVars = Array.isArray(ex.variations) ? (ex.variations as Record<string, unknown>[]) : [];
-  const variations = rawVars
-    .filter((v) => typeof v !== "string" && v.id)
-    .map((v) => ({
-      id: (v.id as string) ?? "",
-      variationDescription: (v.variationDescription as string) ?? (v.description as string) ?? "",
-    }));
-  const variationSuggestions = rawVars
-    .filter((v) => typeof v === "string" || !v.id)
-    .map((v) => {
-      if (typeof v === "string") return { exerciseName: "", variationDescription: v };
-      return {
-        exerciseName: (v.exerciseName as string) ?? (v.name as string) ?? "",
-        variationDescription: (v.variationDescription as string) ?? (v.description as string) ?? "",
-      };
-    });
+  const { variations, relationships } = hydrateVariationsAndRelationships(ex);
 
   return {
     id: exerciseId,
@@ -75,10 +62,7 @@ function hydrateFormFromExercise(
         }))
       : [],
     variations,
-    variationSuggestions,
-    relationships: Array.isArray(ex.relationships)
-      ? (ex.relationships as { type: string; target: { track: string; id: string } }[])
-      : [],
+    relationships,
     imageURLs: (() => {
       const mc = ex.mediaContent as Record<string, unknown> | undefined;
       return Array.isArray(mc?.imageURLs) ? (mc.imageURLs as string[]) : [];
@@ -348,6 +332,7 @@ export default function ReviewEditPage() {
           <InstructionsSection form={form} onChange={onChange} />
           <PerformanceMetricsSection form={form} onChange={onChange} />
           <VariationsSection form={form} onChange={onChange} />
+          <RelationshipsSection form={form} onChange={onChange} />
 
           {/* Existing images from community branch */}
           {existingImages.length > 0 && (

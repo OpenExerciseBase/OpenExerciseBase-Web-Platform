@@ -16,6 +16,7 @@ import {
   VariationsSection,
 } from "@/components/exercise-detail/SidebarSections";
 import RelationshipsSection from "@/components/exercise-detail/RelationshipsSection";
+import { hydrateVariationsAndRelationships } from "@/components/add-form/helpers";
 import NotesSection from "@/components/exercise-detail/NotesSection";
 import MetadataSection from "@/components/exercise-detail/MetadataSection";
 
@@ -33,11 +34,11 @@ interface ExerciseData {
   instructions: { stepNumber: number; description: string }[];
   performanceMetrics: { type: string; unit: string; notes: string }[];
   variations: (string | { id?: string; variationDescription?: string; level?: string; description?: string })[];
-  relationships?: { type: string; target: { track: string; id: string } }[];
-  relationshipSuggestions?: {
+  relationships?: {
     type: string;
-    targetName: string;
-    note: string;
+    target?: { track: string; id: string };
+    targetName?: string;
+    note?: string;
   }[];
   mediaContent: { imageURLs: string[] };
   metadata: {
@@ -144,9 +145,8 @@ export default function ExerciseDetailPage() {
               {isValidated ? "Validated" : "Community"}
             </span>
             {data.metadata?.reviewStatus &&
-              data.metadata.reviewStatus !== data.track &&
-              data.metadata.reviewStatus !== "validated" &&
-              data.metadata.reviewStatus !== "community" && (
+              data.metadata.reviewStatus !== "accepted" &&
+              data.metadata.reviewStatus !== "unreviewed" && (
               <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
                 {formatSnakeCase(data.metadata.reviewStatus)}
               </span>
@@ -201,8 +201,7 @@ export default function ExerciseDetailPage() {
         {/* Relationships */}
         <div className="mt-10">
           <RelationshipsSection
-            relationships={data.relationships}
-            relationshipSuggestions={data.relationshipSuggestions}
+            relationships={hydrateVariationsAndRelationships(data as unknown as Record<string, unknown>).relationships}
           />
         </div>
 
@@ -293,7 +292,7 @@ function DownloadSection({
   const [imgError, setImgError] = useState(false);
   const [imgProgress, setImgProgress] = useState("");
 
-  const RAW = "https://raw.githubusercontent.com/rania-is/samplejson";
+  const RAW = "https://raw.githubusercontent.com/OpenExerciseBase/OpenExerciseBase-Database";
   const hasImages = resolvedImageUrls.length > 0;
 
   const handleJsonDownload = useCallback(async () => {

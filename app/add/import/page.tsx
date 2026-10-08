@@ -5,6 +5,7 @@ import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import { parseZipFile } from "@/components/zip-import/parseZip";
 import type { ParsedExercise, SubmitResult } from "@/components/zip-import/types";
+import ContributorInfoModal, { type ContributorInfo } from "@/components/add-form/ContributorInfoModal";
 
 /* ── Step type ── */
 type Step = "upload" | "review" | "submit";
@@ -269,6 +270,7 @@ export default function ZipImportPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitProgress, setSubmitProgress] = useState({ current: 0, total: 0 });
   const [results, setResults] = useState<SubmitResult[]>([]);
+  const [showContributorModal, setShowContributorModal] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
@@ -329,8 +331,9 @@ export default function ZipImportPage() {
   /* ── Submit ── */
   const submittableExercises = exercises.filter((ex) => ex.status !== "invalid");
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(async (contributor: ContributorInfo) => {
     if (submittableExercises.length === 0) return;
+    setShowContributorModal(false);
     setSubmitting(true);
     setResults([]);
     setStep("submit");
@@ -362,6 +365,8 @@ export default function ZipImportPage() {
             images,
             mode: "zip",
             originalId: ex.originalId ?? undefined,
+            contributorName: contributor.name,
+            contributorEmail: contributor.email,
           }),
         });
 
@@ -583,7 +588,7 @@ export default function ZipImportPage() {
                   Back
                 </button>
                 <button
-                  onClick={handleSubmit}
+                  onClick={() => setShowContributorModal(true)}
                   disabled={submittableExercises.length === 0}
                   className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-deep transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
@@ -653,6 +658,15 @@ export default function ZipImportPage() {
               </>
             )}
           </div>
+        )}
+
+        {/* Contributor info modal */}
+        {showContributorModal && (
+          <ContributorInfoModal
+            submitting={submitting}
+            onConfirm={handleSubmit}
+            onCancel={() => setShowContributorModal(false)}
+          />
         )}
       </main>
     </div>

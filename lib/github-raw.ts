@@ -8,8 +8,8 @@
  * need to call the Contents API to enumerate files.
  */
 
-const OWNER = "rania-is";
-const REPO = "samplejson";
+const OWNER = "OpenExerciseBase";
+const REPO = "OpenExerciseBase-Database";
 const RAW_BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}`;
 
 export { OWNER, REPO, RAW_BASE };

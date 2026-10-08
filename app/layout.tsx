@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Open Exercise Database",
+  title: "OpenExerciseBase",
   description:
     "An open and community driven collection of structured exercise data that is transparently curated and professionally validated.",
 };

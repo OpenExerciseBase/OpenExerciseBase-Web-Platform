@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       imageUrl: e.imageFile
         ? exerciseImageUrl("community", e.id, e.imageFile, e.imageFolder)
         : null,
-      reviewStatus: "community",
+      reviewStatus: "unreviewed",
     }));
 
     return NextResponse.json({ ok: true, exercises });

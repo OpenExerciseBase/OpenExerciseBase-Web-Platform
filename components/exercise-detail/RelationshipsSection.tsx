@@ -2,16 +2,12 @@ import Link from "next/link";
 
 interface Relationship {
   type: string;
-  target: {
+  target?: {
     track: string;
     id: string;
   };
-}
-
-interface RelationshipSuggestion {
-  type: string;
-  targetName: string;
-  note: string;
+  targetName?: string;
+  note?: string;
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -31,18 +27,15 @@ function formatType(type: string): string {
 
 interface RelationshipsSectionProps {
   relationships?: Relationship[];
-  relationshipSuggestions?: RelationshipSuggestion[];
 }
 
 export default function RelationshipsSection({
   relationships,
-  relationshipSuggestions,
 }: RelationshipsSectionProps) {
-  const hasRelationships = relationships && relationships.length > 0;
-  const hasSuggestions =
-    relationshipSuggestions && relationshipSuggestions.length > 0;
+  const links = (relationships ?? []).filter((r) => r.target);
+  const suggestions = (relationships ?? []).filter((r) => !r.target && r.targetName);
 
-  if (!hasRelationships && !hasSuggestions) return null;
+  if (links.length === 0 && suggestions.length === 0) return null;
 
   return (
     <section>
@@ -50,34 +43,37 @@ export default function RelationshipsSection({
         Related exercises
       </h2>
 
-      {hasRelationships && (
+      {links.length > 0 && (
         <div className="space-y-2 mb-6">
-          {relationships.map((rel, i) => (
+          {links.map((rel, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3"
+              className="rounded-xl border border-gray-200 bg-white px-4 py-3"
             >
-              <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                {formatType(rel.type)}
-              </span>
-              <Link
-                href={`/exercises/${rel.target.id}?track=${rel.target.track}`}
-                className="text-sm font-medium text-gray-900 hover:text-primary transition-colors"
-              >
-                {rel.target.id}
-              </Link>
+              <div className="flex items-center gap-3">
+                <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  {formatType(rel.type)}
+                </span>
+                <Link
+                  href={`/exercises/${rel.target!.id}?track=${rel.target!.track}`}
+                  className="text-sm font-medium text-gray-900 hover:text-primary transition-colors"
+                >
+                  {rel.target!.id}
+                </Link>
+              </div>
+              {rel.note && <p className="mt-1.5 text-xs text-gray-500">{rel.note}</p>}
             </div>
           ))}
         </div>
       )}
 
-      {hasSuggestions && (
+      {suggestions.length > 0 && (
         <div>
           <h3 className="text-sm font-semibold text-gray-600 mb-2">
             Suggested relationships
           </h3>
           <div className="space-y-2">
-            {relationshipSuggestions.map((sug, i) => (
+            {suggestions.map((sug, i) => (
               <div
                 key={i}
                 className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-3"

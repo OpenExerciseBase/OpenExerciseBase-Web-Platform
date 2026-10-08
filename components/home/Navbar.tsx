@@ -8,30 +8,30 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-gray-200/60 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex items-center justify-between px-6 py-2">
-        {/* Logo & brand */}
-        <a href="/" className="flex items-center gap-4">
-          <div className="relative h-[80px] w-[80px] shrink-0">
+      <div className="relative mx-auto flex min-h-28 items-center justify-end px-6 py-2">
+        {/* Logo & brand — absolutely positioned so its size doesn't affect the bar's height */}
+        <a href="/" className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center">
+          <div className="relative h-16 w-[192px] shrink-0 sm:h-24 sm:w-[288px] nav:h-auto nav:aspect-[3/1] nav:w-[clamp(190px,calc(100vw_-_1250px),384px)]">
             <Image
-              src="/logo.png"
-              alt="Open Exercise Database logo"
+              src="/oed_logo_noback.png"
+              alt="OpenExerciseBase"
               fill
-              className="rounded-lg object-contain"
+              className="object-contain"
             />
           </div>
-          <span className="self-center text-xl font-semibold text-gray-900 tracking-tight leading-tight">
-            Open Exercise Database
-          </span>
         </a>
 
         {/* Desktop links */}
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="hidden nav:flex items-center gap-8">
           <div className="flex items-center gap-6 text-sm font-medium text-gray-600">
             <a href="/documentation" className="hover:text-primary transition-colors">
-              What is the OEDB
+              What is OpenExerciseBase
             </a>
             <a href="/explore" className="hover:text-primary transition-colors">
               Explore exercises
+            </a>
+            <a href="/insights" className="hover:text-primary transition-colors">
+              Database Statistics &amp; Insights
             </a>
             <a
               href="/contribution-guidelines"
@@ -66,7 +66,7 @@ export default function Navbar() {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="lg:hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 transition-colors"
+          className="nav:hidden rounded-md p-2 text-gray-600 hover:bg-gray-100 transition-colors"
           aria-label="Toggle menu"
         >
           <svg
@@ -95,13 +95,16 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-gray-200/60 bg-white/95 backdrop-blur-md px-6 pb-4 pt-2">
+        <div className="nav:hidden border-t border-gray-200/60 bg-white/95 backdrop-blur-md px-6 pb-4 pt-2">
           <div className="flex flex-col gap-3 text-sm font-medium text-gray-600">
             <a href="/documentation" className="py-1 hover:text-primary">
-              What is the OEDB
+              What is OpenExerciseBase
             </a>
             <a href="/explore" className="py-1 hover:text-primary">
               Explore exercises
+            </a>
+            <a href="/insights" className="py-1 hover:text-primary">
+              Database Statistics &amp; Insights
             </a>
             <a href="/contribution-guidelines" className="py-1 hover:text-primary">
               How to contribute

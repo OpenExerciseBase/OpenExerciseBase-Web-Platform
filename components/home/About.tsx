@@ -1,8 +1,8 @@
 export default function About() {
   const cards = [
     {
-      title: "Structured and machine readable",
-      text: "Exercises are represented using a consistent JSON based structure that makes them easy to reuse across studies, systems, and applications.",
+      title: "Structured and machine-readable",
+      text: "Exercises are represented using a consistent JSON-based structure that supports computational access, exchange, and reuse.",
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
@@ -10,8 +10,8 @@ export default function About() {
       ),
     },
     {
-      title: "Open and versioned",
-      text: "All data is publicly available on GitHub with full version history and transparent change tracking.",
+      title: "Open and extensible",
+      text: "The data model can evolve as new exercise characteristics, relationships, and representation requirements emerge.",
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
@@ -19,17 +19,17 @@ export default function About() {
       ),
     },
     {
-      title: "Community driven",
-      text: "Anyone can propose new exercises or improvements through an open contribution process.",
+      title: "Versioned and traceable",
+      text: "Changes are maintained through version control, preserving the history and provenance of exercise entries.",
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
     },
     {
-      title: "Professionally validated",
-      text: "A dedicated validation track highlights exercises that have been reviewed and approved by professionals.",
+      title: "Community contribution with professional validation",
+      text: "New exercises and improvements can be contributed openly, while professional review remains a separate process and is explicitly reflected in the validation status of each entry.",
       icon: (
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -43,13 +43,17 @@ export default function About() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-2xl">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            What is the Open Exercise Database?
+            What is OpenExerciseBase?
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-gray-600">
-            The Open Exercise Database is an open and structured repository of
-            physical activity exercises. It is designed to support researchers,
-            clinicians, developers, and practitioners who need transparent,
-            reusable, and machine readable exercise definitions.
+            OpenExerciseBase is an open and extensible knowledge infrastructure
+            for individual physical exercises. It represents exercises in a
+            consistent, machine-readable format and provides mechanisms for their
+            continued contribution, revision, versioning, professional review,
+            and reuse. Rather than treating exercise data as a fixed collection,
+            OpenExerciseBase is designed as an evolving resource that can grow
+            and change over time while preserving provenance and validation
+            status.
           </p>
           <a
             href="/documentation"

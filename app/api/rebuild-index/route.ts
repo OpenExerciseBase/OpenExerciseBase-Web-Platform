@@ -7,8 +7,8 @@ import {
 import { buildIndexEntry } from "@/lib/github-raw";
 import { isExerciseId } from "@/lib/exerciseId";
 
-const OWNER = "rania-is";
-const REPO = "samplejson";
+const OWNER = "OpenExerciseBase";
+const REPO = "OpenExerciseBase-Database";
 const API = "https://api.github.com";
 
 /**
@@ -101,9 +101,9 @@ export async function POST(request: NextRequest) {
           if (branch === "community") {
             const status = raw.metadata?.reviewStatus;
             if (
-              status === "validated" ||
-              status === "rejected" ||
-              status === "duplicate"
+              status === "accepted" ||
+              status === "accepted_with_edits" ||
+              status === "rejected"
             )
               return null;
           }

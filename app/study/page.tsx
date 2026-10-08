@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 
-const RAW_BASE = "https://raw.githubusercontent.com/rania-is/samplejson";
+const RAW_BASE = "https://raw.githubusercontent.com/OpenExerciseBase/OpenExerciseBase-Database";
 
 interface Assignment {
   studyId: string;

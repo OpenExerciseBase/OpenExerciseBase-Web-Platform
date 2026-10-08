@@ -8,16 +8,15 @@ export default function Hero() {
           {/* Left column */}
           <div className="max-w-xl">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-[3.25rem] lg:leading-[1.15]">
-              Open Exercise Database
+              OpenExerciseBase
             </h1>
             <p className="mt-5 text-lg leading-relaxed text-gray-600">
-              An open and community driven collection of structured exercise
-              data that is transparently curated and professionally validated.
+              An open, evolving infrastructure for structured exercise knowledge.
             </p>
             <p className="mt-4 text-base leading-relaxed text-gray-500">
-              The Open Exercise Database provides a shared and openly accessible
-              foundation of physical activity exercises for research, digital
-              health applications, and community use.
+              OpenExerciseBase supports the contribution, revision, professional
+              validation, and reuse of machine-readable exercise knowledge across
+              research, rehabilitation, digital health, and other applications.
             </p>
             <p className="mt-4 text-lg font-medium text-primary">
               A collaborative, structured, and extendable exercise repository for everyone!
@@ -63,7 +62,7 @@ export default function Hero() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
                   </svg>
                 }
-                label="JSON based and machine readable"
+                label="Machine readable with API access"
               />
               <TrustIndicator
                 icon={

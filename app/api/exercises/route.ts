@@ -44,7 +44,7 @@ function toExercise(
       ? exerciseImageUrl(branch, entry.id, entry.imageFile, entry.imageFolder)
       : null,
     lastUpdated: entry.lastUpdated,
-    reviewStatus: track,
+    reviewStatus: track === "validated" ? "accepted" : "unreviewed",
   };
 }
 

@@ -7,7 +7,7 @@ export default function Governance() {
             Validation and governance
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-gray-600">
-            To balance openness with data quality, the Open Exercise Database
+            To balance openness with data quality, OpenExerciseBase
             maintains two clearly separated tracks.
           </p>
         </div>
@@ -41,9 +41,10 @@ export default function Governance() {
               </h3>
             </div>
             <p className="mt-4 text-sm leading-relaxed text-gray-600">
-              Exercises that have been reviewed and approved by professionals.
-              These entries are clearly marked and intended for use in research,
-              clinical, or production contexts.
+              Exercises that have undergone professional review and have been
+              approved according to the OpenExerciseBase review process. Their
+              validated status is recorded explicitly and remains distinct from
+              their provenance or method of creation.
             </p>
           </div>
         </div>

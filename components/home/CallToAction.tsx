@@ -4,8 +4,8 @@ export default function CallToAction() {
       <div className="mx-auto max-w-7xl px-6 text-center">
         <div className="mx-auto max-w-2xl">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Explore, contribute, and help build an open foundation for exercise
-            data.
+            Explore, contribute, and help build an open and evolving foundation
+            for exercise knowledge.
           </h2>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -22,7 +22,7 @@ export default function CallToAction() {
               Contribute an exercise
             </a>
             <a
-              href="https://github.com/rania-is/samplejson"
+              href="https://github.com/OpenExerciseBase/OpenExerciseBase-Database"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:border-primary hover:text-primary transition-colors"

@@ -1,4 +1,5 @@
-import type { ExerciseFormState, ValidationResult } from "./types";
+import type { ExerciseFormState, ValidationResult, Variation, Relationship } from "./types";
+import { RELATIONSHIP_TYPE_OPTIONS } from "./types";
 import { generateNewExerciseId, regenerateUlid } from "@/lib/exerciseId";
 
 /* ── Date helpers ── */
@@ -44,6 +45,11 @@ export function validate(form: ExerciseFormState): ValidationResult {
   if (filledSteps.length < 2)
     errors.push("At least two instruction steps with descriptions are required");
 
+  for (const r of form.relationships) {
+    if (r.target ? !r.target.id.trim() : !r.targetName?.trim())
+      errors.push("Every relationship needs a target exercise or a suggested exercise name");
+  }
+
   return { valid: errors.length === 0, errors };
 }
 
@@ -68,18 +74,18 @@ export function assembleJSON(form: ExerciseFormState): Record<string, unknown> {
       unit: m.unit || null,
       notes: m.notes || null,
     })),
-    variations: form.variations.map((v) => ({
-      id: v.id,
-      variationDescription: v.variationDescription,
-    })),
-    variationSuggestions: form.variationSuggestions.map((s) => ({
-      exerciseName: s.exerciseName,
-      variationDescription: s.variationDescription,
-    })),
-    relationships: form.relationships.map((r) => ({
-      type: r.type,
-      target: { track: r.target.track, id: r.target.id },
-    })),
+    variations: form.variations
+      .filter((v) => v.variationDescription.trim() !== "")
+      .map((v) => ({ variationDescription: v.variationDescription.trim() })),
+    relationships: form.relationships.map((r) =>
+      r.target
+        ? {
+            type: r.type,
+            target: { track: r.target.track, id: r.target.id },
+            ...(r.note?.trim() ? { note: r.note.trim() } : {}),
+          }
+        : { type: r.type, targetName: (r.targetName ?? "").trim(), note: (r.note ?? "").trim() }
+    ),
     mediaContent: {
       imageURLs: form.imageURLs.map((name, i) => {
         const dot = name.lastIndexOf(".");
@@ -89,7 +95,7 @@ export function assembleJSON(form: ExerciseFormState): Record<string, unknown> {
     },
     metadata: {
       createdBy: "community",
-      reviewStatus: "community",
+      reviewStatus: "unreviewed",
       reviewedBy: [],
       dateReviewed: null,
       reviewNotes: null,
@@ -148,10 +154,74 @@ export function defaultFormState(): ExerciseFormState {
     ],
     performanceMetrics: [],
     variations: [],
-    variationSuggestions: [],
     relationships: [],
     imageURLs: [],
     imageFiles: [],
     commentsNotes: [],
   };
+}
+
+/* ── Hydration: read variations/relationships from stored or AI-drafted JSON ── */
+
+const RELATIONSHIP_TYPES = new Set<string>(RELATIONSHIP_TYPE_OPTIONS);
+
+/**
+ * Normalises the variation/relationship fields of an exercise JSON (current or legacy
+ * shapes) into the current form state: free-text `variations`, and a single
+ * `relationships` array holding links and named suggestions.
+ */
+export function hydrateVariationsAndRelationships(raw: Record<string, unknown>): {
+  variations: Variation[];
+  relationships: Relationship[];
+} {
+  const variations: Variation[] = [];
+  const relationships: Relationship[] = [];
+  const asType = (t: unknown) => (typeof t === "string" && RELATIONSHIP_TYPES.has(t) ? t : "similar_to");
+
+  const rawVars = Array.isArray(raw.variations) ? (raw.variations as unknown[]) : [];
+  for (const v of rawVars) {
+    if (typeof v === "string") {
+      if (v.trim()) variations.push({ variationDescription: v.trim() });
+      continue;
+    }
+    const o = (v ?? {}) as Record<string, unknown>;
+    const desc = String(o.variationDescription ?? o.description ?? "").trim();
+    const name = String(o.exerciseName ?? o.name ?? "").trim();
+    const id = typeof o.id === "string" ? o.id.trim() : "";
+    if (id) {
+      relationships.push({ type: "similar_to", target: { track: "validated", id }, note: desc });
+    } else if (desc || name) {
+      variations.push({ variationDescription: name && desc ? `${name}: ${desc}` : desc || name });
+    }
+  }
+
+  for (const s of Array.isArray(raw.variationSuggestions) ? (raw.variationSuggestions as unknown[]) : []) {
+    const o = (s ?? {}) as Record<string, unknown>;
+    const desc = String(o.variationDescription ?? o.description ?? "").trim();
+    const name = String(o.exerciseName ?? o.name ?? "").trim();
+    if (desc || name) variations.push({ variationDescription: name && desc ? `${name}: ${desc}` : desc || name });
+  }
+
+  for (const r of Array.isArray(raw.relationships) ? (raw.relationships as unknown[]) : []) {
+    const o = (r ?? {}) as Record<string, unknown>;
+    const t = (o.target ?? null) as Record<string, unknown> | null;
+    if (t && typeof t.id === "string" && t.id) {
+      relationships.push({
+        type: asType(o.type),
+        target: { track: typeof t.track === "string" ? t.track : "validated", id: t.id },
+        ...(typeof o.note === "string" && o.note ? { note: o.note } : {}),
+      });
+    } else if (typeof o.targetName === "string" && o.targetName) {
+      relationships.push({ type: asType(o.type), targetName: o.targetName, note: typeof o.note === "string" ? o.note : "" });
+    }
+  }
+
+  for (const s of Array.isArray(raw.relationshipSuggestions) ? (raw.relationshipSuggestions as unknown[]) : []) {
+    const o = (s ?? {}) as Record<string, unknown>;
+    if (typeof o.targetName === "string" && o.targetName) {
+      relationships.push({ type: asType(o.type), targetName: o.targetName, note: typeof o.note === "string" ? o.note : "" });
+    }
+  }
+
+  return { variations, relationships };
 }

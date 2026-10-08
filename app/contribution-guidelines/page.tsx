@@ -27,7 +27,7 @@ export default function ContributionGuidelinesPage() {
       <div className="border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-6xl px-6 py-14 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Contribution Guidelines</h1>
-          <p className="mt-3 text-base text-gray-500">Open Exercise Database</p>
+          <p className="mt-3 text-base text-gray-500">OpenExerciseBase</p>
         </div>
       </div>
 
@@ -49,7 +49,7 @@ export default function ContributionGuidelinesPage() {
 
           {/* ── 1. Scope ── */}
           <Section id="scope" title="1. Scope of Contribution">
-            <P>The Open Exercise Database currently supports a single category of contribution:</P>
+            <P>OpenExerciseBase currently supports a single category of contribution:</P>
             <P><strong>Submission of a new exercise to the database.</strong></P>
             <P>All new exercises, regardless of submission method, are stored in the community branch of the repository. Exercises remain in the community branch until they undergo professional review.</P>
             <P>No exercise becomes part of the validated dataset until it has been reviewed and approved by a verified professional.</P>
@@ -128,10 +128,9 @@ export default function ContributionGuidelinesPage() {
               "Clarity",
               "Compliance with schema requirements",
             ]} />
-            <P>Metadata must clearly indicate whether the exercise was:</P>
+            <P>Exercises that start from an AI draft are recorded in the metadata as:</P>
             <UL items={[
-              "ai_generated",
-              "co generated with ai",
+              "community co-created with AI, followed by the contributor name and email",
             ]} />
             <P>AI assistance does not replace professional review.</P>
             <P>All AI assisted submissions are stored in the community branch.</P>
@@ -279,7 +278,7 @@ export default function ContributionGuidelinesPage() {
               "Avoid discriminatory or harmful language",
               "Avoid unsupported medical claims",
             ]} />
-            <P>The Open Exercise Database is intended for research and educational purposes.</P>
+            <P>OpenExerciseBase is intended for research and educational purposes.</P>
           </Section>
 
           {/* ── 11. Contributor Responsibility ── */}
@@ -299,7 +298,7 @@ export default function ContributionGuidelinesPage() {
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg>
               Documentation
             </Link>
-            <p className="text-[12px] text-gray-400">Open Exercise Database Contribution Guidelines</p>
+            <p className="text-[12px] text-gray-400">OpenExerciseBase Contribution Guidelines</p>
           </div>
         </article>
       </div>

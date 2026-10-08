@@ -16,7 +16,7 @@ export default function ReviewGuidelinesPage() {
             Reviewer Guidelines
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-gray-500">
-            Standards and expectations for reviewing exercises in the Open Exercise Database.
+            Standards and expectations for reviewing exercises in OpenExerciseBase.
             Validation confirms a qualified professional has reviewed the entry for clarity and safety.
             It does not constitute medical advice.
           </p>

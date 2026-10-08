@@ -7,17 +7,14 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center">
               <Image
-                src="/logo.png"
-                alt="Open Exercise Database logo"
-                width={32}
-                height={32}
-                className="rounded-lg"
+                src="/oed_logo_noback.png"
+                alt="OpenExerciseBase"
+                width={240}
+                height={80}
+                className="h-20 w-auto object-contain"
               />
-              <span className="text-base font-semibold text-gray-900 tracking-tight">
-                Open Exercise Database
-              </span>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-gray-500 max-w-xs">
               An open and community driven repository of structured exercise
@@ -55,7 +52,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/rania-is/samplejson"
+                  href="https://github.com/OpenExerciseBase/OpenExerciseBase-Database"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-gray-500 hover:text-primary transition-colors"
@@ -79,7 +76,7 @@ export default function Footer() {
 
         <div className="mt-12 border-t border-gray-200 pt-6 flex flex-col items-center gap-2">
           <a
-            href="https://creativecommons.org/licenses/by/4.0/"
+            href="https://creativecommons.org/licenses/by-nc/4.0/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -90,16 +87,21 @@ export default function Footer() {
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm0 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21Zm-1.13 7.4c-2.42 0-3.87 1.7-3.87 4.1s1.45 4.1 3.87 4.1c1.8 0 3.05-1.02 3.5-2.55l-1.73-.66c-.25.85-.88 1.5-1.77 1.5-1.18 0-1.93-1-1.93-2.39s.75-2.39 1.93-2.39c.89 0 1.48.6 1.73 1.44l1.73-.7c-.45-1.47-1.7-2.45-3.46-2.45Z" />
             </svg>
+            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm0 1.5a10.5 10.5 0 1 1 0 21 10.5 10.5 0 0 1 0-21Z" />
+              <text x="12" y="16.2" textAnchor="middle" fontSize="11" fontWeight="700">$</text>
+              <path d="M6 6l12 12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
           </a>
           <p className="text-xs text-gray-400 text-center">
-            &copy; {new Date().getFullYear()} Open Exercise Database. Licensed under{" "}
+            &copy; {new Date().getFullYear()} OpenExerciseBase. Licensed under{" "}
             <a
-              href="https://creativecommons.org/licenses/by/4.0/"
+              href="https://creativecommons.org/licenses/by-nc/4.0/"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-gray-600 transition-colors"
             >
-              Creative Commons Attribution 4.0 International (CC BY 4.0)
+              Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
             </a>.
           </p>
         </div>

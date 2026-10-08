@@ -8,6 +8,7 @@ import { useState } from "react";
 const NAV_ITEMS = [
   { href: "/documentation", label: "Documentation" },
   { href: "/explore", label: "Explore exercises" },
+  { href: "/insights", label: "Database Statistics & Insights" },
   { href: "/add", label: "Add exercises" },
   { href: "/review", label: "Review exercises" },
   { href: "/study", label: "Study" },
@@ -22,18 +23,15 @@ export default function PageHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200/60 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex items-center justify-between px-6 py-3">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="relative h-10 w-10 shrink-0">
+        <Link href="/" className="flex items-center">
+          <div className="relative h-14 w-[168px] shrink-0 lg:h-20 lg:w-[240px]">
             <Image
-              src="/logo.png"
-              alt="Open Exercise Database logo"
+              src="/oed_logo_noback.png"
+              alt="OpenExerciseBase"
               fill
-              className="rounded-lg object-contain"
+              className="object-contain"
             />
           </div>
-          <span className="text-lg font-semibold text-gray-900 tracking-tight">
-            Open Exercise Database
-          </span>
         </Link>
 
         {/* Desktop nav */}

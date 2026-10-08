@@ -22,8 +22,12 @@ interface ExerciseData {
   instructions: { stepNumber: number; description: string }[];
   performanceMetrics: { type: string; unit: string; notes: string }[];
   variations: (string | { id?: string; variationDescription?: string; level?: string; description?: string })[];
-  relationships?: { type: string; target: { track: string; id: string } }[];
-  relationshipSuggestions?: { type: string; targetName: string; note: string }[];
+  relationships?: {
+    type: string;
+    target?: { track: string; id: string };
+    targetName?: string;
+    note?: string;
+  }[];
   mediaContent: { imageURLs: string[] };
   metadata: {
     createdBy?: string;
@@ -398,7 +402,9 @@ export default function ReviewDetailPage() {
             <ul className="space-y-2">
               {data.relationships.map((r, i) => (
                 <li key={i} className="rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-700">
-                  <span className="font-medium">{formatSnakeCase(r.type)}</span>: {r.target.id} ({r.target.track})
+                  <span className="font-medium">{formatSnakeCase(r.type)}</span>:{" "}
+                  {r.target ? `${r.target.id} (${r.target.track})` : `${r.targetName ?? ""} (suggestion)`}
+                  {r.note ? ` - ${r.note}` : ""}
                 </li>
               ))}
             </ul>
@@ -482,13 +488,13 @@ export default function ReviewDetailPage() {
                 </button>
                 <button
                   onClick={handleEditApprove}
-                  className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
+                  className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors"
                 >
                   Edit and approve
                 </button>
                 <button
                   onClick={() => { setActiveAction("duplicate"); setReviewNotes(""); setCanonicalId(""); setActionError(null); }}
-                  className="rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition-colors"
+                  className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors"
                 >
                   Mark as duplicate
                 </button>
@@ -591,7 +597,7 @@ export default function ReviewDetailPage() {
                   <button
                     onClick={handleDuplicate}
                     disabled={actionLoading || !canonicalId.trim() || !reviewNotes.trim()}
-                    className="rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                   >
                     {actionLoading && <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />}
                     Confirm duplicate
