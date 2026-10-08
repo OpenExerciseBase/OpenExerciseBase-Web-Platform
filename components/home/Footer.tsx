@@ -94,7 +94,7 @@ export default function Footer() {
             </svg>
           </a>
           <p className="text-xs text-gray-400 text-center">
-            &copy; {new Date().getFullYear()} Ludwig Boltzmann Institute for Digital Health and Prevention. Licensed under{" "}
+            <span className="font-medium text-gray-500">Exercise data:</span> &copy; {new Date().getFullYear()} Ludwig Boltzmann Institute for Digital Health and Prevention. Licensed under{" "}
             <a
               href="https://creativecommons.org/licenses/by-nc/4.0/"
               target="_blank"
@@ -102,6 +102,17 @@ export default function Footer() {
               className="underline hover:text-gray-600 transition-colors"
             >
               Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)
+            </a>.
+          </p>
+          <p className="text-xs text-gray-400 text-center">
+            <span className="font-medium text-gray-500">Website software:</span> Licensed under{" "}
+            <a
+              href="https://github.com/OpenExerciseBase/OpenExerciseBase-Web-Platform/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-gray-600 transition-colors"
+            >
+              Apache License 2.0 with Commons Clause
             </a>.
           </p>
         </div>

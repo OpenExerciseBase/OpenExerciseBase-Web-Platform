@@ -166,8 +166,11 @@ export default function DocumentationPage() {
             <H3>Validated and community exercises</H3>
             <P>To use only exercises that have undergone professional review, read the <code>main</code> branch. The review status of every exercise is also recorded in its metadata (see section 6.6), so exercises from both branches can be told apart after they have been combined.</P>
 
-            <H3>Licence</H3>
+            <H3>Licence of the exercise data</H3>
             <P>The exercise data of OpenExerciseBase is copyright © 2026 Ludwig Boltzmann Institute for Digital Health and Prevention and is licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary-deep">Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>. You may share and adapt the exercise data for non-commercial purposes, provided that you give appropriate credit, link to the licence, and indicate if changes were made. Commercial use requires separate permission from the project team (see section 2). The full licence text is provided in the <code>LICENSE</code> file of the data repository.</P>
+
+            <H3>Licence of the website software</H3>
+            <P>The source code of the OpenExerciseBase website is licensed under the <a href="https://github.com/OpenExerciseBase/OpenExerciseBase-Web-Platform/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary-deep">Apache License 2.0 with the Commons Clause</a>, as stated in the <code>LICENSE</code> file of the website repository. The code may be used, modified, and redistributed under the terms of Apache 2.0, but the Commons Clause excludes the right to sell it, including offering a paid product or service, such as hosting or support, whose value derives entirely or substantially from the software. The software licence applies to the code only and not to the exercise data.</P>
 
             <H3>Attribution and citation</H3>
             <P>When using OpenExerciseBase, please cite the project as described in section 2 and state which branch and which version of the data you used. Because the repository is version controlled, the identifier of the commit you used can be given to make your work reproducible.</P>
