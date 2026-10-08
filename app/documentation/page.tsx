@@ -8,15 +8,17 @@ import PageHeader from "@/components/PageHeader";
 
 const TOC = [
   { id: "introduction", label: "1. Introduction" },
-  { id: "what-is-exercise", label: "2. What Is Physical Exercise" },
-  { id: "purpose", label: "3. Purpose of the Database" },
-  { id: "data-structure", label: "4. Exercise Data Structure" },
-  { id: "contribution-model", label: "5. Contribution Model" },
-  { id: "review-model", label: "6. Professional Review Model" },
-  { id: "use-cases", label: "7. Use Cases" },
-  { id: "ai-integration", label: "8. AI Integration" },
-  { id: "scope-limitations", label: "9. Scope and Limitations" },
-  { id: "versioning", label: "10. Versioning and Transparency" },
+  { id: "team", label: "2. Team and Contact" },
+  { id: "access-reuse", label: "3. Access and Reuse" },
+  { id: "what-is-exercise", label: "4. What Is Physical Exercise" },
+  { id: "purpose", label: "5. Purpose of OpenExerciseBase" },
+  { id: "data-structure", label: "6. Exercise Data Structure" },
+  { id: "contribution-model", label: "7. Contribution Model" },
+  { id: "review-model", label: "8. Professional Review Model" },
+  { id: "use-cases", label: "9. Use Cases" },
+  { id: "ai-integration", label: "10. AI Integration" },
+  { id: "scope-limitations", label: "11. Scope and Limitations" },
+  { id: "versioning", label: "12. Versioning and Traceability" },
   { id: "appendix-a", label: "Appendix A: Data Schema" },
 ];
 
@@ -100,8 +102,9 @@ export default function DocumentationPage() {
           {/* 1. Introduction */}
           {/* ════════════════════════════════════════════ */}
           <Section id="introduction" title="1. Introduction">
-            <P>OpenExerciseBase is an open, structured, and professionally validated repository of physical exercises designed to serve researchers, developers, clinicians, educators, and exercise professionals.</P>
-            <P>The database provides machine readable, consistently structured exercise descriptions that can be used in:</P>
+            <P>OpenExerciseBase is an open and extensible knowledge infrastructure for individual physical exercises. It represents exercises in a consistent, machine-readable format and provides mechanisms for their continued contribution, revision, versioning, professional review, and reuse. It is designed to serve researchers, developers, clinicians, educators, and exercise professionals.</P>
+            <P>Rather than treating exercise data as a fixed collection, OpenExerciseBase is designed as an evolving resource that can grow and change over time while preserving provenance and validation status.</P>
+            <P>OpenExerciseBase provides machine-readable, consistently structured exercise descriptions that can be used in:</P>
             <UL items={[
               "Research studies",
               "Digital health systems",
@@ -110,16 +113,76 @@ export default function DocumentationPage() {
               "Fitness and wellness applications",
               "Educational materials",
             ]} />
-            <P>The platform combines open community contribution with professional validation to ensure both accessibility and scientific integrity.</P>
+            <P>The platform combines open community contribution with professional validation. Contribution and validation are separate processes: new exercises and improvements can be contributed openly, while professional review is recorded explicitly in the validation status of each entry.</P>
+          </Section>
+
+          {/* ════════════════════════════════════════════ */}
+          {/* 11. Team */}
+          {/* ════════════════════════════════════════════ */}
+          <Section id="team" title="2. Team and Contact">
+            <P>OpenExerciseBase is developed and maintained by the following team.</P>
+
+            <H3>Project team</H3>
+            <UL items={[
+              "[Name], [role], [affiliation]",
+              "[Name], [role], [affiliation]",
+              "[Name], [role], [affiliation]",
+            ]} />
+
+            <H3>Professional reviewers</H3>
+
+            <H3>Contact</H3>
+            <P>[Contact email address]</P>
+
+            <H3>Citing OpenExerciseBase</H3>
+            <P>[Citation of the OpenExerciseBase paper]</P>
+
+            <H3>Funding and acknowledgements</H3>
+            <P>[Funding sources and acknowledgements, to be added.]</P>
+          </Section>
+
+          {/* ════════════════════════════════════════════ */}
+          {/* 9. Access and Reuse */}
+          {/* ════════════════════════════════════════════ */}
+          <Section id="access-reuse" title="3. Access and Reuse">
+            <P>The exercise data is published openly in a public GitHub repository and can be accessed and reused in several ways.</P>
+
+            <H3>Repository</H3>
+            <P>The data is hosted at <a href="https://github.com/OpenExerciseBase/OpenExerciseBase-Database" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary-deep">github.com/OpenExerciseBase/OpenExerciseBase-Database</a>. Branches mark the maturity of the content:</P>
+            <UL items={[
+              "main: validated exercises that have undergone professional review",
+              "community: contributed exercises that are unreviewed or have been rejected",
+            ]} />
+            <P>Each exercise is one JSON file in the <code>exercises</code> folder, and its images are stored in <code>images/&lt;exercise_id&gt;/</code>. An <code>index.json</code> file on each branch lists the exercises with their name, categories, body parts, equipment, setting, image, and last update, so that the collection can be browsed without reading every record.</P>
+
+            <H3>Ways to access the data</H3>
+            <UL items={[
+              "Clone the repository, or download a branch as an archive from GitHub. The full version history is included.",
+              "Use the read endpoint GET /api/exercises of this website, which returns a summary of the exercises of both branches together with their track (validated or community) and review status.",
+              "Browse, search, and filter exercises on the Explore page, and download the JSON record or the images of an individual exercise from its page.",
+              "See current statistics of the dataset on the Database Statistics & Insights page.",
+            ]} />
+
+            <H3>Validated and community exercises</H3>
+            <P>To use only exercises that have undergone professional review, read the <code>main</code> branch. The review status of every exercise is also recorded in its metadata (see section 6.6), so exercises from both branches can be told apart after they have been combined.</P>
+
+            <H3>Licence</H3>
+            <P>OpenExerciseBase is licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary-deep">Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</a>. You may share and adapt the exercise data for non-commercial purposes, provided that you give appropriate credit, link to the licence, and indicate if changes were made. Commercial use requires separate permission from the project team (see section 2). The full licence text is provided in the <code>LICENSE</code> file of the data repository.</P>
+
+            <H3>Attribution and citation</H3>
+            <P>When using OpenExerciseBase, please cite the project as described in section 2 and state which branch and which version of the data you used. Because the repository is version controlled, the identifier of the commit you used can be given to make your work reproducible.</P>
+
+            <H3>Contributing</H3>
+            <P>Exercises and improvements can be contributed through the platform. See the <Link href="/contribution-guidelines" className="text-primary underline hover:text-primary-deep">contribution guidelines</Link> for how this works.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 2. What Is Physical Exercise */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="what-is-exercise" title="2. What Is Physical Exercise">
+          <Section id="what-is-exercise" title="4. What Is Physical Exercise">
             <H3>Core Definition</H3>
-            <P>Physical exercise is a type of physical activity that is planned, structured, repetitive, and performed with the specific purpose of improving or maintaining physical fitness and health.</P>
-            <P>In exercise science, exercise is defined as a subcategory of physical activity in which muscle contractions are organized in a planned, structured, and repetitive manner.</P>
+            <P>Physical exercise is a type of physical activity that is planned, structured, repetitive, and performed with the specific purpose of improving or maintaining physical fitness and health [1].</P>
+            <P>In exercise science, exercise is defined as a subcategory of physical activity in which muscle contractions are organized in a planned, structured, and repetitive manner [1].</P>
             <P>The goal of exercise is to improve or maintain one or more components of physical fitness, including:</P>
             <UL items={[
               "Cardiovascular endurance",
@@ -131,7 +194,7 @@ export default function DocumentationPage() {
             ]} />
 
             <H3>Difference Between Physical Activity and Physical Exercise</H3>
-            <P>Physical activity refers to any bodily movement produced by skeletal muscles that requires energy expenditure. This includes:</P>
+            <P>Physical activity refers to any bodily movement produced by skeletal muscles that requires energy expenditure [1, 2]. This includes:</P>
             <UL items={[
               "Occupational movement",
               "Transportation such as walking or cycling",
@@ -145,20 +208,25 @@ export default function DocumentationPage() {
               "Repetitive",
               "Designed with a specific fitness goal",
             ]} />
-            <P>This distinction is important for research and digital systems, as the database focuses specifically on structured exercise rather than all forms of movement.</P>
+            <P>This distinction is important for research and digital systems, as OpenExerciseBase focuses specifically on structured exercise rather than all forms of movement.</P>
+
+            <H3>References</H3>
+            <P>[1] Caspersen CJ, Powell KE, Christenson GM. Physical activity, exercise, and physical fitness: definitions and distinctions for health-related research. <em>Public Health Reports</em>. 1985;100(2):126-131. <a href="https://pubmed.ncbi.nlm.nih.gov/3920711/" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary-deep">PubMed</a></P>
+            <P>[2] World Health Organization. <em>WHO guidelines on physical activity and sedentary behaviour</em>. Geneva: World Health Organization; 2020.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 3. Purpose */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="purpose" title="3. Purpose of the Database">
+          <Section id="purpose" title="5. Purpose of OpenExerciseBase">
             <P>OpenExerciseBase aims to provide:</P>
             <UL items={[
-              "A standardized representation of exercises",
-              "A consistent schema for structured data",
-              "Open access to exercise descriptions",
-              "A transparent validation mechanism",
-              "Traceable metadata and versioning",
+              "A standardized, machine-readable representation of exercises",
+              "A consistent schema for structured exercise data",
+              "Open access to exercise knowledge",
+              "Mechanisms for continued contribution and revision",
+              "A transparent professional validation process whose outcome is recorded for each entry",
+              "Versioning and traceable provenance",
             ]} />
             <P>Unlike many proprietary exercise databases, this project prioritizes:</P>
             <UL items={[
@@ -168,16 +236,16 @@ export default function DocumentationPage() {
               "Professional oversight",
               "Long term extensibility",
             ]} />
-            <P>The database is designed to be both human readable and machine actionable.</P>
+            <P>The resource is designed to be both human readable and machine actionable. The data model can evolve as new exercise characteristics, relationships, and representation requirements emerge.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 4. Data Structure */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="data-structure" title="4. Exercise Data Structure">
-            <P>Each exercise in the database follows a structured schema to ensure consistency and interoperability.</P>
+          <Section id="data-structure" title="6. Exercise Data Structure">
+            <P>Each exercise record follows a structured schema to ensure consistency and interoperability. Exercise data is represented using a consistent JSON-based structure that supports computational access, exchange, and reuse.</P>
 
-            <H3 id="ds-basic">4.1 Basic Information</H3>
+            <H3 id="ds-basic">6.1 Basic Information</H3>
             <P>Includes:</P>
             <UL items={[
               "Unique identifier",
@@ -197,7 +265,7 @@ export default function DocumentationPage() {
             ]} />
             <P>This structure enables filtering, searching, and integration into external systems. It is extensible to accommodate future classifications.</P>
 
-            <H3 id="ds-instructions">4.2 Instructions</H3>
+            <H3 id="ds-instructions">6.2 Instructions</H3>
             <P>Instructions are organized as a sequence of clearly defined steps.</P>
             <P>Each step includes:</P>
             <UL items={["Step number", "Description of the movement"]} />
@@ -210,7 +278,7 @@ export default function DocumentationPage() {
               "Avoid unsupported medical claims",
             ]} />
 
-            <H3 id="ds-metrics">4.3 Performance Metrics</H3>
+            <H3 id="ds-metrics">6.3 Performance Metrics</H3>
             <P>Performance metrics describe how the exercise may be measured.</P>
             <P>These do not prescribe values. Instead, they define measurable dimensions such as:</P>
             <UL items={[
@@ -223,7 +291,7 @@ export default function DocumentationPage() {
             ]} />
             <P>This enables integration into tracking systems, research protocols, and digital monitoring platforms.</P>
 
-            <H3 id="ds-variations">4.4 Variations and Relationships</H3>
+            <H3 id="ds-variations">6.4 Variations and Relationships</H3>
             <P>Two separate fields describe how an exercise relates to others.</P>
             <UL items={[
               "Relationships are typed, machine readable links to other exercises: variation of, progression of, regression of, similar to, or replacement for. When the related exercise is not in the database yet, a relationship can name it as a suggestion instead of linking to an ID.",
@@ -231,7 +299,7 @@ export default function DocumentationPage() {
             ]} />
             <P>This supports structured linking between related exercises and enables interoperability across systems.</P>
 
-            <H3 id="ds-media">4.5 Media Content</H3>
+            <H3 id="ds-media">6.5 Media Content</H3>
             <P>Exercises may include:</P>
             <UL items={[
               "One or more instructional images",
@@ -246,7 +314,7 @@ export default function DocumentationPage() {
               "Free of branding or promotional elements",
             ]} />
 
-            <H3 id="ds-metadata">4.6 Metadata and Review Tracking</H3>
+            <H3 id="ds-metadata">6.6 Metadata and Review Tracking</H3>
             <P>Each exercise includes metadata for transparency and traceability.</P>
             <P>Metadata includes:</P>
             <UL items={[
@@ -263,26 +331,27 @@ export default function DocumentationPage() {
             <P>Review statuses include:</P>
             <UL items={["Unreviewed", "Accepted", "Accepted with edits", "Rejected"]} />
             <P>This structure ensures accountability, reproducibility, and auditability.</P>
+            <P>Validation status is recorded explicitly and remains distinct from provenance. Provenance is recorded in the created by field: an exercise may be written by a professional, generated with AI, or contributed by the community, regardless of whether it has been reviewed.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 5. Contribution Model */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="contribution-model" title="5. Contribution Model">
-            <P>The database operates under an open contribution model.</P>
+          <Section id="contribution-model" title="7. Contribution Model">
+            <P>OpenExerciseBase operates under an open contribution model.</P>
             <P>Anyone can:</P>
             <UL items={[
               "Submit new exercises",
               "Suggest edits or improvements",
               "Contribute variations",
             ]} />
-            <P>Submissions are stored in the community branch and undergo professional review before validation.</P>
+            <P>Submissions are stored in the community branch and undergo professional review before validation. Contribution and professional review are separate processes, and the outcome of the review is explicitly reflected in the validation status of each entry.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 6. Review Model */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="review-model" title="6. Professional Review Model">
+          <Section id="review-model" title="8. Professional Review Model">
             <P>Validated exercises are reviewed by verified professionals.</P>
             <P>Reviewers assess:</P>
             <UL items={[
@@ -292,14 +361,14 @@ export default function DocumentationPage() {
               "Scientific neutrality",
               "Duplication and overlap",
             ]} />
-            <P>Validation indicates that a qualified professional has reviewed the exercise for clarity and safety.</P>
+            <P>Validation indicates that an exercise has undergone professional review and has been approved according to the OpenExerciseBase review process, including a check of its clarity and safety. Validated status is recorded explicitly and remains distinct from the provenance or method of creation of the exercise.</P>
             <P>Validation does not constitute medical advice, individualized prescription, or clinical recommendation.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 7. Use Cases */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="use-cases" title="7. Use Cases">
+          <Section id="use-cases" title="9. Use Cases">
             <P>OpenExerciseBase can be used for:</P>
 
             <H3>Research</H3>
@@ -322,7 +391,7 @@ export default function DocumentationPage() {
           {/* ════════════════════════════════════════════ */}
           {/* 8. AI Integration */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="ai-integration" title="8. Artificial Intelligence Integration">
+          <Section id="ai-integration" title="10. Artificial Intelligence Integration">
             <P>The platform supports AI assisted drafting of exercises.</P>
             <P>AI may be used to:</P>
             <UL items={[
@@ -331,14 +400,14 @@ export default function DocumentationPage() {
               "Generate neutral instructional images",
             ]} />
             <P>All AI generated exercises remain clearly labeled and require professional validation before being marked as validated.</P>
-            <P>AI supports the workflow but does not replace human oversight.</P>
+            <P>AI supports the workflow but does not replace human oversight. The use of AI is recorded as provenance and is independent of validation status.</P>
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* 9. Scope */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="scope-limitations" title="9. Scope and Limitations">
-            <P>The database provides structured exercise descriptions for educational and research purposes.</P>
+          <Section id="scope-limitations" title="11. Scope and Limitations">
+            <P>OpenExerciseBase provides structured exercise descriptions for educational and research purposes.</P>
             <P>It does not:</P>
             <UL items={[
               "Provide individualized medical prescriptions",
@@ -352,18 +421,18 @@ export default function DocumentationPage() {
           {/* ════════════════════════════════════════════ */}
           {/* 10. Versioning */}
           {/* ════════════════════════════════════════════ */}
-          <Section id="versioning" title="10. Versioning and Transparency">
+          <Section id="versioning" title="12. Versioning and Traceability">
             <P>All exercises are version controlled via GitHub.</P>
-            <P>Changes are traceable. Review actions are recorded. Metadata provides historical context for every modification.</P>
+            <P>Changes are traceable. Review actions are recorded. Metadata provides historical context for every modification. Versioning allows the resource to evolve while preserving the history and provenance of each exercise entry.</P>
             <P>This ensures:</P>
-            <UL items={["Transparency", "Accountability", "Scientific reproducibility"]} />
+            <UL items={["Transparency", "Accountability", "Preserved provenance", "Scientific reproducibility"]} />
           </Section>
 
           {/* ════════════════════════════════════════════ */}
           {/* Appendix A */}
           {/* ════════════════════════════════════════════ */}
           <Section id="appendix-a" title="Appendix A: Data Schema Specification">
-            <P>This appendix defines the structured representation used in OpenExerciseBase. The schema is designed to be machine readable, consistent across entries, and extensible over time.</P>
+            <P>This appendix defines the structured representation used in OpenExerciseBase. The schema is designed to be machine-readable, consistent across entries, and extensible over time, so that it can evolve as new exercise characteristics, relationships, and representation requirements emerge.</P>
             <P>All exercises are stored as individual JSON objects using a standardized structure.</P>
 
             <H3 id="a1">A.1 Top Level Structure</H3>
