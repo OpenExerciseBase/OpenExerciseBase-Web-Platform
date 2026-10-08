@@ -24,7 +24,7 @@ export default function PageHeader() {
     <header className="sticky top-0 z-50 w-full border-b border-gray-200/60 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex items-center justify-between px-6 py-3">
         <Link href="/" className="flex items-center">
-          <div className="relative h-14 w-[168px] shrink-0 lg:h-20 lg:w-[240px]">
+          <div className="relative h-12 w-[144px] shrink-0 lg:h-16 lg:w-[192px]">
             <Image
               src="/oed_logo_noback.png"
               alt="OpenExerciseBase"

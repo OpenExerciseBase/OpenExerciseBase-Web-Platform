@@ -11,7 +11,7 @@ export default function Navbar() {
       <div className="relative mx-auto flex min-h-28 items-center justify-end px-6 py-2">
         {/* Logo & brand — absolutely positioned so its size doesn't affect the bar's height */}
         <a href="/" className="absolute left-6 top-1/2 -translate-y-1/2 flex items-center">
-          <div className="relative h-16 w-[192px] shrink-0 sm:h-24 sm:w-[288px] nav:h-auto nav:aspect-[3/1] nav:w-[clamp(190px,calc(100vw_-_1250px),384px)]">
+          <div className="relative h-12 w-[144px] shrink-0 sm:h-20 sm:w-[240px] nav:h-auto nav:aspect-[3/1] nav:w-[clamp(150px,calc((100vw_-_1250px)*0.85),320px)]">
             <Image
               src="/oed_logo_noback.png"
               alt="OpenExerciseBase"
@@ -22,8 +22,8 @@ export default function Navbar() {
         </a>
 
         {/* Desktop links */}
-        <div className="hidden nav:flex items-center gap-8">
-          <div className="flex items-center gap-6 text-sm font-medium text-gray-600">
+        <div className="hidden nav:flex items-center gap-6">
+          <div className="flex items-center gap-4 text-sm font-medium text-gray-600">
             <a href="/documentation" className="hover:text-primary transition-colors">
               What is OpenExerciseBase
             </a>
