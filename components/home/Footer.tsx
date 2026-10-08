@@ -94,7 +94,7 @@ export default function Footer() {
             </svg>
           </a>
           <p className="text-xs text-gray-400 text-center">
-            &copy; {new Date().getFullYear()} OpenExerciseBase. Licensed under{" "}
+            &copy; {new Date().getFullYear()} Ludwig Boltzmann Institute for Digital Health and Prevention. Licensed under{" "}
             <a
               href="https://creativecommons.org/licenses/by-nc/4.0/"
               target="_blank"
